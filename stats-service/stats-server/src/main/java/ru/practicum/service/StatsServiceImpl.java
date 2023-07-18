@@ -7,11 +7,14 @@ import ru.practicum.mapper.StatsMapper;
 import ru.practicum.model.Statistics;
 import ru.practicum.repository.StatsRepository;
 import ru.practicum.stats_dto.EndpointHit;
+import ru.practicum.stats_dto.TimeStampConverter;
 import ru.practicum.stats_dto.ViewStats;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+
+import static ru.practicum.stats_dto.TimeStampConverter.mapToLocalDateTime;
 
 @Service
 @AllArgsConstructor
@@ -23,7 +26,8 @@ public class StatsServiceImpl implements StatsService {
     @Override
     @Transactional
     public void add(EndpointHit endpointHit) {
-        Statistics hit = statsMapper.endpointHitToStatistics(endpointHit);
+        LocalDateTime timestamp = mapToLocalDateTime(endpointHit.getTimestamp());
+        Statistics hit = statsMapper.endpointHitToStatistics(endpointHit, timestamp);
         statsRepository.save(hit);
     }
 

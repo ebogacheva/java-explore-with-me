@@ -1,13 +1,8 @@
 package ru.practicum.stats_dto;
 
-import org.springframework.stereotype.Component;
-
-import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
-@Component
 public class TimeStampConverter {
 
     public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -19,5 +14,4 @@ public class TimeStampConverter {
     public static String mapToString(LocalDateTime timestamp) {
         return timestamp.format(FORMATTER);
     }
-
 }
