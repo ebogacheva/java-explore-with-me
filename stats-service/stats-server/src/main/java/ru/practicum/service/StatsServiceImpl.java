@@ -7,7 +7,6 @@ import ru.practicum.mapper.StatsMapper;
 import ru.practicum.model.Statistics;
 import ru.practicum.repository.StatsRepository;
 import ru.practicum.stats_dto.EndpointHit;
-import ru.practicum.stats_dto.TimeStampConverter;
 import ru.practicum.stats_dto.ViewStats;
 
 import java.time.LocalDateTime;
@@ -33,7 +32,7 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<ViewStats> getStatistics(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        if (Objects.isNull(uris) || uris.isEmpty()) {
+        if (Objects.isNull(uris)) {
             if (unique) {
                 return statsRepository.countUniqueAllInTimeLimit(start, end);
             } else {

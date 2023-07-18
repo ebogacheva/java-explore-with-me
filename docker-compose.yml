@@ -10,8 +10,8 @@ services:
       - stats-db
     environment:
       - STATS_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
-      - STATS_DATASOURCE_USER = root
-      - STATS_DATASOURCE_PASSWORD = password
+      - DATASOURCE_USER=root
+      - DATASOURCE_PASSWORD=password
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "/etc/timezone:/etc/timezone:ro"
@@ -22,9 +22,9 @@ services:
     ports:
       - "6541:5432"
     environment:
-      - STATS_POSTGRES_DB = stats
-      - STATS_POSTGRES_USER = root
-      - STATS_POSTGRES_PASSWORD = password
+      - POSTGRES_DB=stats
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "/etc/timezone:/etc/timezone:ro"
@@ -40,18 +40,18 @@ services:
     environment:
       - STATS_SERVER_URL=http://stats-server:9090
       - EWM_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewm
-      - EWM_DATASOURCE_USER = root
-      - EWM_DATASOURCE_PASSWORD = password
+      - DATASOURCE_USER=root
+      - DATASOURCE_PASSWORD=password
 
   ewm-db:
     image: postgres:14-alpine
     container_name: ewm-db-container
     ports:
-      - "6541:5432"
+      - "6542:5432"
     environment:
-      - EWM_POSTGRES_DB = ewm
-      - EWM_POSTGRES_USER = root
-      - EWM_POSTGRES_PASSWORD = password
+      - POSTGRES_DB=ewm
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "/etc/timezone:/etc/timezone:ro"

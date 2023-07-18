@@ -64,12 +64,12 @@ public class StatsClient {
     private String getPath(List<String> uris, Boolean unique) {
         StringBuilder path = new StringBuilder(GET_STATS_ENDPOINT);
         path.append(START_END_PATH_PART);
-        if(Objects.nonNull(uris) && !uris.isEmpty()) {
+        if (Objects.nonNull(uris) && !uris.isEmpty()) {
             for (String uri : uris) {
                 path.append(URIS_PATH_PART).append(uri);
             }
         }
-        if(Objects.nonNull(unique)) {
+        if (Objects.nonNull(unique)) {
             path.append(UNIQUE_PATH_PART).append(unique);
         }
         return path.toString();

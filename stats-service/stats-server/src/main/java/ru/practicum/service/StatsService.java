@@ -8,5 +8,6 @@ import ru.practicum.stats_dto.EndpointHit;
 public interface StatsService {
 
     void add(EndpointHit endpointHit);
+
     List<ViewStats> getStatistics(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique);
 }
