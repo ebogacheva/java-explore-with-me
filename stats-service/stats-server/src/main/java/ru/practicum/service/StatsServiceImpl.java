@@ -32,7 +32,7 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<ViewStats> getStatistics(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        if (Objects.isNull(uris)) {
+        if (Objects.isNull(uris) || uris.isEmpty()) {
             if (unique) {
                 return statsRepository.countUniqueAllInTimeLimit(start, end);
             } else {
@@ -46,5 +46,4 @@ public class StatsServiceImpl implements StatsService {
             }
         }
     }
-
 }
