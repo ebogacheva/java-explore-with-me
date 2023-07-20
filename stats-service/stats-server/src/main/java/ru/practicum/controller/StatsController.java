@@ -2,7 +2,6 @@ package ru.practicum.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.exception.IncorrectTimeLimitException;
 import ru.practicum.service.StatsServiceImpl;
 import ru.practicum.stats_dto.EndpointHit;
 import ru.practicum.stats_dto.ViewStats;
@@ -32,9 +31,6 @@ public class StatsController {
                                     @RequestParam(required = false, defaultValue = "false") Boolean unique) {
         LocalDateTime start = mapToLocalDateTime(startStr);
         LocalDateTime end = mapToLocalDateTime(endStr);
-        if (end.isBefore(start)) {
-            throw new IncorrectTimeLimitException("Please check time limit params: end shouldn't be before start.");
-        }
         return statsService.getStatistics(start, end, uris, unique);
     }
 }

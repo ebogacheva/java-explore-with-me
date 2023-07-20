@@ -3,6 +3,7 @@ package ru.practicum.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.exception.IncorrectTimeLimitException;
 import ru.practicum.mapper.StatsMapper;
 import ru.practicum.model.Statistics;
 import ru.practicum.repository.StatsRepository;
@@ -32,6 +33,7 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<ViewStats> getStatistics(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+        checkTimeLimitParams(start, end);
         if (Objects.isNull(uris) || uris.isEmpty()) {
             if (unique) {
                 return statsRepository.countUniqueAllInTimeLimit(start, end);
@@ -44,6 +46,12 @@ public class StatsServiceImpl implements StatsService {
             } else {
                 return statsRepository.countLimitedListInTimeLimit(start, end, uris);
             }
+        }
+    }
+
+    private static void checkTimeLimitParams(LocalDateTime start, LocalDateTime end) {
+        if (end.isBefore(start)) {
+            throw new IncorrectTimeLimitException("Please check time limit params: end shouldn't be before start.");
         }
     }
 }
