@@ -1,15 +1,57 @@
 version: '3.1'
 services:
   stats-server:
+    build: stats-service/stats-server
+    image: ewm-stats-server-image
+    container_name: ewm-stats-server-container
     ports:
       - "9090:9090"
+    depends_on:
+      - stats-db
+    environment:
+      - STATS_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
+      - DATASOURCE_USER=root
+      - DATASOURCE_PASSWORD=password
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
 
   stats-db:
     image: postgres:14-alpine
+    container_name: stats-db-container
+    ports:
+      - "6541:5432"
+    environment:
+      - POSTGRES_DB=stats
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
 
   ewm-service:
+    build: main-service
+    image: ewm-service-image
+    container_name: ewm-service-container
     ports:
       - "8080:8080"
+    depends_on:
+      - ewm-db
+    environment:
+      - STATS_SERVER_URL=http://stats-server:9090
+      - EWM_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewm
+      - DATASOURCE_USER=root
+      - DATASOURCE_PASSWORD=password
 
   ewm-db:
     image: postgres:14-alpine
+    container_name: ewm-db-container
+    ports:
+      - "6542:5432"
+    environment:
+      - POSTGRES_DB=ewm
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
