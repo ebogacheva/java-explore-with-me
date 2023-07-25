@@ -1,11 +1,12 @@
-package ru.practicum.users.mapper;
+package ru.practicum.user.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
-import ru.practicum.users.dto.NewUserRequest;
-import ru.practicum.users.dto.UserDto;
-import ru.practicum.users.model.User;
+import ru.practicum.user.dto.NewUserRequest;
+import ru.practicum.user.dto.UserDto;
+import ru.practicum.user.dto.UserShortDto;
+import ru.practicum.user.model.User;
 
 import java.util.List;
 
@@ -17,6 +18,8 @@ public interface UserMapper {
 
     UserDto userToUserDto(User user);
 
-    List<User> pageToList(Page<User> page);
+    UserShortDto userToUserShortDto(User user);
+
+    List<UserDto> pageToList(Page<UserDto> page);
 
 }

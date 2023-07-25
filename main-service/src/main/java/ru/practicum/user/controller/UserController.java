@@ -1,10 +1,10 @@
-package ru.practicum.users.controller;
+package ru.practicum.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.users.dto.NewUserRequest;
-import ru.practicum.users.dto.UserDto;
-import ru.practicum.users.service.UserServiceImpl;
+import ru.practicum.user.dto.NewUserRequest;
+import ru.practicum.user.dto.UserDto;
+import ru.practicum.user.service.UserServiceImpl;
 
 import javax.validation.Valid;
 import java.util.List;
