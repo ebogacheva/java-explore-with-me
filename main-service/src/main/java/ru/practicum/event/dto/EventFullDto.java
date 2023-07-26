@@ -22,7 +22,9 @@ public class EventFullDto {
     private String description;
     private String eventDate;
     private UserShortDto initiator;
-    private Location location;
+    private LocationDto locationDto;
+    private Boolean paid;
+    private Integer participantLimit;
     private String publishedOn;
     private Boolean requestModeration;
     private String state;

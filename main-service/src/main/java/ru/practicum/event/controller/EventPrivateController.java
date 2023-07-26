@@ -8,6 +8,7 @@ import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.service.EventServiceImpl;
 import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.request.dto.ParticipationRequestDto;
 
 import javax.validation.Valid;
@@ -53,9 +54,9 @@ public class EventPrivateController {
     }
 
     @PatchMapping(value = "/{userId}/events/{eventId}/requests")
-    EventFullDto update(@PathVariable Long userId,
-                        @PathVariable Long eventId,
-                        @Valid @RequestBody EventRequestStatusUpdateRequest updateRequest) {
+    EventRequestStatusUpdateResult update(@PathVariable Long userId,
+                                          @PathVariable Long eventId,
+                                          @Valid @RequestBody EventRequestStatusUpdateRequest updateRequest) {
         return eventService.update(updateRequest, userId, eventId);
     }
 

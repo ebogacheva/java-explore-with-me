@@ -18,6 +18,18 @@ public class ErrorHandler {
         return new ErrorResponse("Not found error: ", e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handle(final EWMUpdateForbiddenException e) {
+        return new ErrorResponse("Update forbidden error: ", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handle(final EWMRequestConfirmForbiddenException e) {
+        return new ErrorResponse("Update request status error: ", e.getMessage());
+    }
+
     @ExceptionHandler({ConstraintViolationException.class, MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handle(Exception e) throws Exception {

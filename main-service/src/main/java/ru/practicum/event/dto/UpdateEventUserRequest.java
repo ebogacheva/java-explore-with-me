@@ -21,7 +21,7 @@ public class UpdateEventUserRequest {
     private String description;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private String eventDate;
-    private Location location;
+    private LocationDto locationDto;
     private Boolean paid;
     @Min(0)
     private Integer participantLimit;

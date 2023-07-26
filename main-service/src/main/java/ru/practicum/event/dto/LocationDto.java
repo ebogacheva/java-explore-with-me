@@ -15,10 +15,10 @@ public class LocationDto {
     @NotNull
     @DecimalMin(value = "-180.0")
     @DecimalMax(value = "180.0")
-    private Float lat;
+    private Double lat;
 
     @NotNull
     @DecimalMin(value = "-180.0")
     @DecimalMax(value = "180.0")
-    private Float lot;
+    private Double lot;
 }
