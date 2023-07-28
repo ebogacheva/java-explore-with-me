@@ -1,17 +1,18 @@
 package ru.practicum.request.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder(toBuilder = true)
 public class EventRequestStatusUpdateRequest {
 
-    List<Long> requestIds;
+    private List<Long> requestIds;
     @NotNull
-    String requestStatus;
+    private String requestStatus;
 }

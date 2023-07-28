@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.event.controller.EventFilterParams;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.mapper.LocationMapper;
@@ -16,10 +17,13 @@ import ru.practicum.event.model.Location;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.LocationRepository;
 import ru.practicum.exception.EWMElementNotFoundException;
+import ru.practicum.exception.EWMRequestConfirmForbiddenException;
 import ru.practicum.exception.EWMUpdateForbiddenException;
 import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.request.mapper.ParticipationRequestMapper;
+import ru.practicum.request.model.ParticipationRequest;
 import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
@@ -46,6 +50,7 @@ public class EventServiceImpl implements EventService {
     private final LocationMapper locationMapper;
     private final CategoryRepository categoryRepository;
     private final LocationRepository locationRepository;
+    private final ParticipationRequestMapper participationRequestMapper;
 
     @Override
     public List<EventShortDto> getEvents(Long userId, Integer from, Integer size) {
@@ -71,16 +76,22 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto update(UpdateEventUserRequest updateRequest, Long userId, Long eventId) {
+    public EventFullDto update(UpdateEventUserRequest request, Long userId, Long eventId) {
         getUserIfExists(userId); // TODO: do we need this checking?
         Event event = getEventIfExists(eventId); // TODO: do we need to check that user is an initiator of the event?
-        return updateEvent(updateRequest, event);
+        EventStateAction action = EventStateAction.valueOf(request.getEventStateAction());
+        updateEvent(request, event);
+        eventRepository.save(event);
+        return eventMapper.eventToEventFullDto(event);
     }
 
     @Override
     public List<ParticipationRequestDto> getRequests(Long userId, Long eventId) {
         getUserIfExists(userId);
-        return requestRepository.findByEventId(eventId);
+        return requestRepository.findByEventId(eventId)
+                .stream()
+                .map(participationRequestMapper::participationRequestToParticipationRequestDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -96,15 +107,105 @@ public class EventServiceImpl implements EventService {
         if (event.getParticipantLimit() == 0) {
             return result;
         }
+        List<ParticipationRequest> requestsToUpdate =
+                requestRepository.findByEventId(eventId)
+                        .stream()
+                        .filter(requestDto -> ids.contains(requestDto.getId()))
+                        .collect(Collectors.toList());
         if (status == RequestStatus.CONFIRMED) {
-            confirmRequests(ids, result);
+            confirmRequests(requestsToUpdate, result, event);
         } else if (status == RequestStatus.REJECTED) {
-            rejectRequests(ids, result);
+            rejectRequests(requestsToUpdate, result, event);
         }
         return result;
     }
-    private void confirmRequests(List<Long> ids, EventRequestStatusUpdateResult result) {
 
+    @Override
+    public List<EventFullDto> get(EventFilterParams params) {
+        return eventRepository.findEventsByAdmin(params)
+                .stream()
+                .map(eventMapper::eventToEventFullDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public EventFullDto update(UpdateEventAdminRequest request, Long eventId) {
+        Event event = getEventIfExists(eventId);
+        checkDateTimeIsAfterNow(event.getEventDate(), 1);
+        EventStateAction action = EventStateAction.valueOf(request.getEventStateAction());
+        switch (action) {
+            case PUBLISH_EVENT:
+                publishEvent(request, event);
+                break;
+            case REJECT_EVENT:
+                rejectEvent(event);
+                break;
+        }
+        eventRepository.save(event);
+        return eventMapper.eventToEventFullDto(event);
+    }
+
+    private void publishEvent(UpdateEventAdminRequest request, Event event) {
+        if(event.getState() != EventState.PENDING) {
+            throw new EWMUpdateForbiddenException("Событие не может быть опубликовано.");
+        } else {
+            updateEventFields(request, event);
+            event.setState(EventState.PUBLISHED);
+        }
+    }
+
+    private void rejectEvent(Event event) {
+        if (event.getState() == EventState.PENDING) {
+            event.setState(EventState.REJECTED);
+        } else {
+            throw new EWMUpdateForbiddenException("Событие не может быть отклонено.");
+        }
+    }
+
+    private void confirmRequests(List<ParticipationRequest> requestsToUpdate, EventRequestStatusUpdateResult result, Event event) {
+        Long confirmed = requestRepository.countByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED);
+        Long limit = event.getParticipantLimit();
+        boolean limitExceeded = false;
+        for (ParticipationRequest request : requestsToUpdate) {
+            checkPendingRequestStatus(request);
+            if (Objects.equals(confirmed, limit)) {
+                addToRejectedAndSave(request, result);
+                limitExceeded = true;
+            } else {
+                addToConfirmedAndSave(request, result);
+                confirmed++;
+            }
+        }
+        if (limitExceeded) {
+            throw new EWMRequestConfirmForbiddenException("Достигнут лимит участников в событии.");
+        }
+    }
+
+    private void checkPendingRequestStatus(ParticipationRequest request) {
+        if (request.getStatus() != RequestStatus.PENDING) {
+            throw new EWMRequestConfirmForbiddenException("Ошибка статуса запроса.");
+        }
+    }
+
+    private void rejectRequests(List<ParticipationRequest> requestsToUpdate, EventRequestStatusUpdateResult result, Event event) {
+        for (ParticipationRequest request : requestsToUpdate) {
+            checkPendingRequestStatus(request);
+            addToRejectedAndSave(request, result);
+        }
+    }
+
+    private void addToRejectedAndSave(ParticipationRequest request, EventRequestStatusUpdateResult result) {
+        result.getRejectedRequests()
+                .add(participationRequestMapper.participationRequestToParticipationRequestDto(request));
+        request.setStatus(RequestStatus.REJECTED);
+        requestRepository.save(request);
+    }
+
+    private void addToConfirmedAndSave(ParticipationRequest request, EventRequestStatusUpdateResult result) {
+        result.getConfirmedRequests()
+                .add(participationRequestMapper.participationRequestToParticipationRequestDto(request));
+        request.setStatus(RequestStatus.CONFIRMED);
+        requestRepository.save(request);
     }
 
     private User getUserIfExists(Long userId) {
@@ -164,6 +265,12 @@ public class EventServiceImpl implements EventService {
 
     private EventFullDto updateEvent(UpdateEventUserRequest request, Event event) {
         checkEventIsCanceledOrPending(event);
+        updateEventFields(request, event);
+        updateEventStateAction(request.getEventStateAction(), event);
+        return eventMapper.eventToEventFullDto(event);
+    }
+
+    private void updateEventFields(UpdateEventRequest request, Event event) {
         updateEventAnnotation(request.getAnnotation(), event);
         updateEventCategory(request.getCategory(), event);
         updateEventDescription(request.getDescription(), event);
@@ -172,8 +279,13 @@ public class EventServiceImpl implements EventService {
         updateEventPaidStatus(request.getPaid(), event);
         updateEventParticipationLimit(request.getParticipantLimit(), event);
         updateEventRequestModeration(request.getRequestModeration(), event);
-        updateEventStateAction(request.getEventStateAction(), event);
-        return eventMapper.eventToEventFullDto(event);
+        updateEventTitle(request.getTitle(), event);
+    }
+
+    private void updateEventTitle(String title, Event event) {
+        if (Objects.nonNull(title)) {
+            event.setTitle(title);
+        }
     }
 
     private void updateEventStateAction(String action, Event event) {
@@ -193,7 +305,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void updateEventParticipationLimit(Integer limit, Event event) {
+    private void updateEventParticipationLimit(Long limit, Event event) {
         if (Objects.nonNull(limit)) {
             event.setParticipantLimit(limit);
         }
@@ -215,10 +327,17 @@ public class EventServiceImpl implements EventService {
     private void updateEventDate(String eventDate, Event event) {
         if (Objects.nonNull(eventDate)) {
             LocalDateTime updatedEventDate = stringToLocalDateTime(eventDate);
-            LocalDateTime minEventDateTime = LocalDateTime.now().plus(2, ChronoUnit.HOURS);
-            if(Objects.nonNull(updatedEventDate) && updatedEventDate.isAfter(minEventDateTime)) {
+            if(Objects.nonNull(updatedEventDate)) {
+                checkDateTimeIsAfterNow(updatedEventDate, 2);
                 event.setEventDate(updatedEventDate);
             }
+        }
+    }
+
+    private void checkDateTimeIsAfterNow(LocalDateTime dateTime, Integer gapFromNowInHours) {
+        LocalDateTime minEventDateTime = LocalDateTime.now().plusHours(gapFromNowInHours);
+        if (dateTime.isBefore(minEventDateTime)) {
+            throw new EWMUpdateForbiddenException("Невозможно установить дату события.");
         }
     }
 

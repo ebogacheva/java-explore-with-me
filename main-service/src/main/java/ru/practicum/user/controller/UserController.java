@@ -18,10 +18,10 @@ public class UserController {
     private final UserServiceImpl userService;
 
     @GetMapping
-    public List<UserDto> get(@RequestParam(required = false) Long[] ids,
+    public List<UserDto> get(@RequestParam(required = false) List<Long> ids,
                              @RequestParam(required = false, defaultValue = "0") Integer from,
                              @RequestParam(required = false, defaultValue = "10") Integer size) {
-        return userService.get(List.of(ids), from, size);
+        return userService.get(ids, from, size);
     }
 
     @PostMapping

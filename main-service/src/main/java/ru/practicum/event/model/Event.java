@@ -49,7 +49,7 @@ public class Event {
     private Boolean paid;
 
     @Column(name = "participant_limit")
-    private Integer participantLimit;
+    private Long participantLimit;
 
     @Column(name = "published_on")
     private LocalDateTime publishedOn;

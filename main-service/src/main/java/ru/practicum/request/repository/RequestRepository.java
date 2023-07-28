@@ -10,5 +10,5 @@ import java.util.List;
 public interface RequestRepository extends JpaRepository<ParticipationRequest, Long> {
 
     Long countByEventIdAndStatus(Long eventId, RequestStatus status);
-    List<ParticipationRequestDto> findByEventId(Long eventId);
+    List<ParticipationRequest> findByEventId(Long eventId);
 }
