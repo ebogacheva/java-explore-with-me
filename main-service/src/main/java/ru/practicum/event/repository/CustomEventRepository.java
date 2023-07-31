@@ -1,11 +1,13 @@
 package ru.practicum.event.repository;
 
-import ru.practicum.event.controller.EventFilterParams;
+import ru.practicum.event.dto.EventFilterParams;
+import ru.practicum.event.dto.EventFilterParamsDto;
 import ru.practicum.event.model.Event;
 
 import java.util.List;
 
 public interface CustomEventRepository {
 
-    List<Event> findEventsByAdmin(EventFilterParams params);
+    List<Event> adminEventsSearch(EventFilterParams params);
+    List<Event> publicEventsSearch(EventFilterParams params);
 }

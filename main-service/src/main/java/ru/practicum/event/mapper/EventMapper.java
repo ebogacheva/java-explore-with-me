@@ -4,18 +4,22 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
 import ru.practicum.category.mapper.CategoryMapper;
-import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.NewEventDto;
+import ru.practicum.event.dto.*;
 import ru.practicum.event.model.Event;
+
+import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.List;
 import ru.practicum.user.mapper.UserMapper;
+
+import ru.practicum.utils.EWMDateTimeFormatter;
+import ru.practicum.utils.EWMTimeDecoderUrl;
 
 @Mapper(componentModel = "spring", uses = {CategoryMapper.class, UserMapper.class, LocationMapper.class})
 public interface EventMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "eventDate", expression = "java(EWMDateTimeFormatter.stringToLocalDateTime(newEventDto.getEventDate()))")
+    @Mapping(target = "eventDate", expression = "java(ru.practicum.utils.EWMDateTimeFormatter.stringToLocalDateTime(newEventDto.getEventDate()))")
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "location", ignore = true)
     @Mapping(target = "createdOn", ignore = true)
@@ -24,22 +28,24 @@ public interface EventMapper {
     @Mapping(target = "state", ignore = true)
     Event newEventDtoToEvent(NewEventDto newEventDto);
 
-    @Mapping(target = "categoryDto", source = "category")
     @Mapping(target = "confirmedRequests", ignore = true)
-    @Mapping(target = "createdOn", expression = "java(EWMDateTimeFormatter.localDateTimeToString(event.getEventDate()))")
-    @Mapping(target = "eventDate", expression = "java(EWMDateTimeFormatter.localDateTimeToString(event.getEventDate()))")
+    @Mapping(target = "createdOn", expression = "java(ru.practicum.utils.EWMDateTimeFormatter.localDateTimeToString(event.getEventDate()))")
+    @Mapping(target = "eventDate", expression = "java(ru.practicum.utils.EWMDateTimeFormatter.localDateTimeToString(event.getEventDate()))")
     @Mapping(target = "initiator", source = "initiator")
-    @Mapping(target = "locationDto", source = "location")
-    @Mapping(target = "publishedOn", expression = "java(EWMDateTimeFormatter.localDateTimeToString(event.getPublishedDate()))")
+    @Mapping(target = "publishedOn", expression = "java(ru.practicum.utils.EWMDateTimeFormatter.localDateTimeToString(event.getPublishedOn()))")
     @Mapping(target = "views", ignore = true)
     EventFullDto eventToEventFullDto(Event event);
 
     @Mapping(target = "categoryDto", source = "category")
     @Mapping(target = "confirmedRequests", ignore = true)
-    @Mapping(target = "eventDate", expression = "java(EWMDateTimeFormatter.localDateTimeToString(event.getEventDate()))")
+    @Mapping(target = "eventDate", expression = "java(ru.practicum.utils.EWMDateTimeFormatter.localDateTimeToString(event.getEventDate()))")
     @Mapping(target = "initiator", source = "initiator")
     @Mapping(target = "views", ignore = true)
     EventShortDto eventToEventShortDto(Event event);
 
-    List<EventShortDto> pageToList(Page<EventShortDto> page);
+    List<Event> pageToList(Page<Event> page);
+
+    @Mapping(target = "rangeEnd", expression = "java(end)")
+    @Mapping(target = "rangeStart", expression = "java(start)")
+    EventFilterParams eventFilterParamsDtoToEventFilterParams(EventFilterParamsDto eventFilterParamsDto, LocalDateTime start, LocalDateTime end);
 }

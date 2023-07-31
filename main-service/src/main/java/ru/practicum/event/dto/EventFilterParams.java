@@ -1,7 +1,7 @@
-package ru.practicum.event.controller;
+package ru.practicum.event.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import ru.practicum.event.model.EventSort;
 import ru.practicum.event.model.EventState;
 
 import java.time.LocalDateTime;
@@ -9,6 +9,9 @@ import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder(toBuilder = true)
 public class EventFilterParams {
 
     private List<Long> ids;
@@ -18,4 +21,8 @@ public class EventFilterParams {
     private LocalDateTime rangeEnd;
     private Integer from;
     private Integer size;
+    private String text;
+    private Boolean paid;
+    private Boolean onlyAvailable;
+    private EventSort sort;
 }

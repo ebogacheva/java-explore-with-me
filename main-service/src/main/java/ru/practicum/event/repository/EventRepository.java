@@ -8,5 +8,5 @@ import ru.practicum.event.model.Event;
 
 public interface EventRepository extends JpaRepository<Event, Long>, CustomEventRepository {
 
-    Page<EventShortDto> findByInitiatorId(Long initiatorId, Pageable pageable);
+    Page<Event> findByInitiatorId(Long initiatorId, Pageable pageable);
 }

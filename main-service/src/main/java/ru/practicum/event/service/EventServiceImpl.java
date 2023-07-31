@@ -6,16 +6,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
-import ru.practicum.event.controller.EventFilterParams;
+import ru.practicum.event.dto.EventFilterParamsDto;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.mapper.LocationMapper;
-import ru.practicum.event.model.Event;
-import ru.practicum.event.model.EventState;
-import ru.practicum.event.model.EventStateAction;
-import ru.practicum.event.model.Location;
+import ru.practicum.event.model.*;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.LocationRepository;
+import ru.practicum.exception.EWMConflictException;
 import ru.practicum.exception.EWMElementNotFoundException;
 import ru.practicum.exception.EWMRequestConfirmForbiddenException;
 import ru.practicum.exception.EWMUpdateForbiddenException;
@@ -28,9 +26,10 @@ import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
+import ru.practicum.utils.EWMTimeDecoderUrl;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -56,9 +55,12 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getEvents(Long userId, Integer from, Integer size) {
         getUserIfExists(userId);
         Pageable pageable = pageRequestOf(from, size);
-        Page<EventShortDto> pageOfEvents = eventRepository.findByInitiatorId(userId, pageable);
-        List<EventShortDto> listOfEvents = eventMapper.pageToList(pageOfEvents);
-        return listOfEvents.stream().map(this::completeEventShortDto).collect(Collectors.toList());
+        Page<Event> pageOfEvents = eventRepository.findByInitiatorId(userId, pageable);
+        List<Event> listOfEvents = eventMapper.pageToList(pageOfEvents);
+        return listOfEvents.stream()
+                .map(eventMapper::eventToEventShortDto)
+                .map(this::completeEventShortDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -79,7 +81,8 @@ public class EventServiceImpl implements EventService {
     public EventFullDto update(UpdateEventUserRequest request, Long userId, Long eventId) {
         getUserIfExists(userId); // TODO: do we need this checking?
         Event event = getEventIfExists(eventId); // TODO: do we need to check that user is an initiator of the event?
-        EventStateAction action = EventStateAction.valueOf(request.getEventStateAction());
+        //EventStateAction action = EventStateAction.valueOf(request.getEventStateAction());
+        checkEventIsCanceledOrPending(event);
         updateEvent(request, event);
         eventRepository.save(event);
         return eventMapper.eventToEventFullDto(event);
@@ -121,8 +124,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> get(EventFilterParams params) {
-        return eventRepository.findEventsByAdmin(params)
+    public List<EventFullDto> getByAdmin(EventFilterParamsDto paramsDto) {
+        EventFilterParams params = convertInputParams(paramsDto);
+        return eventRepository.adminEventsSearch(params)
                 .stream()
                 .map(eventMapper::eventToEventFullDto)
                 .collect(Collectors.toList());
@@ -132,7 +136,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto update(UpdateEventAdminRequest request, Long eventId) {
         Event event = getEventIfExists(eventId);
         checkDateTimeIsAfterNow(event.getEventDate(), 1);
-        EventStateAction action = EventStateAction.valueOf(request.getEventStateAction());
+        EventStateAction action = request.getEventStateAction();
         switch (action) {
             case PUBLISH_EVENT:
                 publishEvent(request, event);
@@ -143,6 +147,56 @@ public class EventServiceImpl implements EventService {
         }
         eventRepository.save(event);
         return eventMapper.eventToEventFullDto(event);
+    }
+
+    @Override
+    public List<EventShortDto> getByPublic(EventFilterParamsDto paramsDto) {
+        EventFilterParams params = convertInputParams(paramsDto);
+        return eventRepository.publicEventsSearch(params)
+                .stream()
+                .map(eventMapper::eventToEventShortDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public EventFullDto get(Long eventId) {
+        Event event = getEventIfExists(eventId);
+        checkEventIsPublished(event);
+        return completeEventFullDto(event);
+    }
+
+    private EventFilterParams convertInputParams(EventFilterParamsDto paramsDto) {
+        EventFilterParams params;
+        try {
+            String startString = paramsDto.getRangeStart();
+            String endString = paramsDto.getRangeEnd();
+            LocalDateTime start;
+            LocalDateTime end = null;
+            if (Objects.nonNull(startString)) {
+                start = EWMTimeDecoderUrl.urlStringToLocalDateTime(startString);
+            } else {
+                start = LocalDateTime.now();
+            }
+            if (Objects.nonNull(endString)) {
+                end = EWMTimeDecoderUrl.urlStringToLocalDateTime(endString);
+            }
+            params = EventFilterParams.builder()
+                    .ids(paramsDto.getIds())
+                    .states(paramsDto.getStates())
+                    .categories(paramsDto.getCategories())
+                    .rangeStart(start)
+                    .rangeEnd(end)
+                    .from(paramsDto.getFrom())
+                    .size(paramsDto.getSize())
+                    .onlyAvailable(paramsDto.getOnlyAvailable())
+                    .text(paramsDto.getText())
+                    .paid(paramsDto.getPaid())
+                    .sort(paramsDto.getSort())
+                    .build();
+        } catch (UnsupportedEncodingException e) {
+            throw new EWMConflictException("Некорретный запрос.");
+        }
+        return params;
     }
 
     private void publishEvent(UpdateEventAdminRequest request, Event event) {
@@ -241,8 +295,8 @@ public class EventServiceImpl implements EventService {
     private Event completeNewEvent(NewEventDto newEventDto, Long userId) {
         Event event = eventMapper.newEventDtoToEvent(newEventDto);
         User user = getUserIfExists(userId);
-        Category category = getCategoryIfExists(newEventDto.getCatId()); // TODO make joins with corresponding tables
-        Location location = getLocation(newEventDto.getLocationDto());
+        Category category = getCategoryIfExists(newEventDto.getCategory()); // TODO make joins with corresponding tables
+        Location location = getLocation(newEventDto.getLocation());
         event.setInitiator(user);
         event.setCategory(category);
         event.setLocation(location);
@@ -288,12 +342,11 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void updateEventStateAction(String action, Event event) {
-        if (Objects.nonNull(action)) {
-            EventStateAction updatedAction = EventStateAction.fromString(action);
-            if (updatedAction == EventStateAction.SEND_TO_REVIEW) {
+    private void updateEventStateAction(EventStateAction action, Event event) {
+        if (Objects.nonNull(action)) {;
+            if (action == EventStateAction.SEND_TO_REVIEW) {
                 event.setState(EventState.PENDING);
-            } else if (updatedAction == EventStateAction.CANCEL_REVIEW) {
+            } else if (action == EventStateAction.CANCEL_REVIEW) {
                 event.setState(EventState.CANCELED);
             }
         }
@@ -357,6 +410,13 @@ public class EventServiceImpl implements EventService {
     private void updateEventAnnotation(String annotation, Event event) {
         if(Objects.nonNull(annotation)) {
             event.setAnnotation(annotation);
+        }
+    }
+
+    private void checkEventIsPublished(Event event) {
+        boolean published = event.getState() == EventState.PUBLISHED;
+        if (!published) {
+            throw new EWMElementNotFoundException(EVENT_NOT_FOUND_EXCEPTION_MESSAGE);
         }
     }
 

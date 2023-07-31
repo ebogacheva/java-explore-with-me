@@ -7,8 +7,10 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.practicum.event.model.EventStateAction;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -29,7 +31,7 @@ public class UpdateEventRequest {
     @Min(0)
     protected Long participantLimit;
     protected Boolean requestModeration;
-    protected String eventStateAction;
+    protected EventStateAction eventStateAction;
     @Length(min = 3, max = 120)
     protected String title;
 }

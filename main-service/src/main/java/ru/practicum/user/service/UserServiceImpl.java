@@ -14,6 +14,7 @@ import ru.practicum.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static ru.practicum.utils.EWMCommonConstants.USER_NOT_FOUND_EXCEPTION_MESSAGE;
 import static ru.practicum.utils.EWMCommonMethods.pageRequestOf;
@@ -38,7 +39,7 @@ public class UserServiceImpl implements UserService {
     public UserDto create(NewUserRequest userRequest) {
         User newUser = mapper.newUserRequestToUser(userRequest);
         User saved = repository.save(newUser);
-        return mapper.userToUserDto(saved); // TODO: mapper?
+        return mapper.userToUserDto(saved);
     }
 
     @Override
@@ -53,12 +54,16 @@ public class UserServiceImpl implements UserService {
     }
 
     private List<UserDto> getUsersByIds(List<Long> ids) {
-        return repository.findAllById(ids);
+        List<User> users = repository.findAllByIdIn(ids);
+        return users.stream().map(mapper::userToUserDto).collect(Collectors.toList());
     }
 
     private List<UserDto> getAllUsersPaged(Integer from, Integer size) {
         Pageable pageable = pageRequestOf(from, size);
-        Page<UserDto> users = repository.findUsers(pageable); // TODO: mapper?
-        return mapper.pageToList(users);
+        Page<User> users = repository.findAll(pageable);
+        return mapper.pageToList(users)
+                .stream()
+                .map(mapper::userToUserDto)
+                .collect(Collectors.toList());
     }
 }

@@ -12,6 +12,7 @@ import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.exception.EWMElementNotFoundException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.practicum.utils.EWMCommonMethods.pageRequestOf;
 
@@ -28,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto create(NewCategoryDto category) {
         Category newCategory = mapper.newCategoryDtoToCategory(category);
         Category saved = repository.save(newCategory);
-        return mapper.categoryToCategoryDto(saved); // TODO: mapper??
+        return mapper.categoryToCategoryDto(saved);
     }
 
     @Override
@@ -41,14 +42,17 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto update(CategoryDto categoryDto, Long catId) {
         Category category = getCategoryIfExists(catId);
         updateCategoryByDto(category, categoryDto);
-        return mapper.categoryToCategoryDto(repository.save(category)); // TODO: mapper??
+        return mapper.categoryToCategoryDto(repository.save(category));
     }
 
     @Override
     public List<CategoryDto> get(Integer from, Integer size) {
         Pageable pageable = pageRequestOf(from, size);
-        Page<CategoryDto> categories = repository.findCategories(pageable);
-        return mapper.pageToList(categories);
+        Page<Category> categories = repository.findAll(pageable);
+        return mapper.pageToList(categories)
+                .stream()
+                .map(mapper::categoryToCategoryDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -63,6 +67,6 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private void updateCategoryByDto(Category category, CategoryDto categoryDto) {
-        category.setName(category.getName());
+        category.setName(categoryDto.getName());
     }
 }

@@ -1,6 +1,6 @@
 package ru.practicum.event.service;
 
-import ru.practicum.event.controller.EventFilterParams;
+import ru.practicum.event.dto.EventFilterParamsDto;
 import ru.practicum.event.dto.*;
 import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.request.dto.EventRequestStatusUpdateResult;
@@ -22,8 +22,12 @@ public interface EventService {
 
     EventRequestStatusUpdateResult update(EventRequestStatusUpdateRequest updateRequest, Long userId, Long eventId);
 
-    List<EventFullDto> get(EventFilterParams params);
+    List<EventFullDto> getByAdmin(EventFilterParamsDto params);
 
     EventFullDto update(UpdateEventAdminRequest request, Long eventId);
+
+    List<EventShortDto> getByPublic(EventFilterParamsDto params);
+
+    EventFullDto get(Long eventId);
 }
 

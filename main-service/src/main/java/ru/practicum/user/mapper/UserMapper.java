@@ -20,6 +20,6 @@ public interface UserMapper {
 
     UserShortDto userToUserShortDto(User user);
 
-    List<UserDto> pageToList(Page<UserDto> page);
+    List<User> pageToList(Page<User> page);
 
 }
