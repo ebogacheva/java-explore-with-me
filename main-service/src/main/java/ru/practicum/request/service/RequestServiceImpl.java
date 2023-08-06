@@ -46,7 +46,9 @@ public class RequestServiceImpl implements RequestService {
         Event event = getEventIfExists(eventId);
         checkUserIsInitiator(userId, event);
         checkEventIsPublished(event);
-        checkParticipantsLimitIsReached(event);
+        if (event.getParticipantLimit() > 0) {
+            checkParticipantsLimitIsReached(event);
+        }
         ParticipationRequest request = completeNewRequest(userId, event);
         return mapper.participationRequestToParticipationRequestDto(requestRepository.save(request));
     }
@@ -61,7 +63,8 @@ public class RequestServiceImpl implements RequestService {
 
     private ParticipationRequest completeNewRequest(Long userId, Event event) {
         User user = getUserIfExists(userId);
-        RequestStatus status = event.getRequestModeration() ? RequestStatus.PENDING : RequestStatus.CONFIRMED;
+        boolean doNotNeedConfirmation = event.getRequestModeration() || event.getParticipantLimit() == 0;
+        RequestStatus status = doNotNeedConfirmation ? RequestStatus.CONFIRMED : RequestStatus.PENDING;
         return ParticipationRequest.builder()
                 .requester(user)
                 .status(status)

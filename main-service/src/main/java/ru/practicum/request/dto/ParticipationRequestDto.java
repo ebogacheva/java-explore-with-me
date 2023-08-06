@@ -11,7 +11,7 @@ public class ParticipationRequestDto {
 
     private Long id;
     private String created;
-    private Long eventId;
-    private Long requesterId;
+    private Long event;
+    private Long requester;
     private String status;
 }

@@ -6,6 +6,7 @@ import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.request.dto.ParticipationRequestDto;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface EventService {
@@ -26,7 +27,7 @@ public interface EventService {
 
     EventFullDto update(UpdateEventAdminRequest request, Long eventId);
 
-    List<EventShortDto> getByPublic(EventFilterParamsDto params);
+    List<EventShortDto> getByPublic(EventFilterParamsDto params, HttpServletRequest request);
 
     EventFullDto get(Long eventId);
 }

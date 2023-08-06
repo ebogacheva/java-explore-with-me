@@ -12,7 +12,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class EventRequestStatusUpdateRequest {
 
-    private List<Long> requestIds;
+    private List<Long> requestIds = List.of();
     @NotNull
     private String requestStatus;
 }

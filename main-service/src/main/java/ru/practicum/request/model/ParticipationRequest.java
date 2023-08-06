@@ -20,7 +20,8 @@ public class ParticipationRequest {
     private Long id;
 
     @Column(name = "created")
-    private LocalDateTime created;
+    @Builder.Default
+    private LocalDateTime created = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "event_id")

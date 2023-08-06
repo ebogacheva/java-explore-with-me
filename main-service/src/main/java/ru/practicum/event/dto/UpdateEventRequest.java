@@ -10,7 +10,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.event.model.EventStateAction;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -26,12 +25,12 @@ public class UpdateEventRequest {
     protected String description;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     protected String eventDate;
-    protected LocationDto locationDto;
+    protected LocationDto location;
     protected Boolean paid;
     @Min(0)
     protected Long participantLimit;
     protected Boolean requestModeration;
-    protected EventStateAction eventStateAction;
+    protected EventStateAction stateAction;
     @Length(min = 3, max = 120)
     protected String title;
 }

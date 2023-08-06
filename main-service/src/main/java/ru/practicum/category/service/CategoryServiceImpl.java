@@ -9,9 +9,14 @@ import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.event.model.Event;
+import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exception.EWMConflictException;
 import ru.practicum.exception.EWMElementNotFoundException;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.utils.EWMCommonMethods.pageRequestOf;
@@ -22,33 +27,35 @@ public class CategoryServiceImpl implements CategoryService {
 
     private static final String CATEGORY_NOT_FOUND_EXCEPTION_MESSAGE = "Категория не найдена.";
 
-    private final CategoryRepository repository;
+    private final CategoryRepository categoryRepository;
+    private final EventRepository eventRepository;
     private final CategoryMapper mapper;
 
     @Override
     public CategoryDto create(NewCategoryDto category) {
         Category newCategory = mapper.newCategoryDtoToCategory(category);
-        Category saved = repository.save(newCategory);
+        Category saved = categoryRepository.save(newCategory);
         return mapper.categoryToCategoryDto(saved);
     }
 
     @Override
     public void delete(Long catId) {
         getCategoryIfExists(catId);
-        repository.deleteById(catId);
+        checkNoEventWithCategoryExists(catId);
+        categoryRepository.deleteById(catId);
     }
 
     @Override
     public CategoryDto update(CategoryDto categoryDto, Long catId) {
         Category category = getCategoryIfExists(catId);
         updateCategoryByDto(category, categoryDto);
-        return mapper.categoryToCategoryDto(repository.save(category));
+        return mapper.categoryToCategoryDto(categoryRepository.save(category));
     }
 
     @Override
     public List<CategoryDto> get(Integer from, Integer size) {
         Pageable pageable = pageRequestOf(from, size);
-        Page<Category> categories = repository.findAll(pageable);
+        Page<Category> categories = categoryRepository.findAll(pageable);
         return mapper.pageToList(categories)
                 .stream()
                 .map(mapper::categoryToCategoryDto)
@@ -61,12 +68,22 @@ public class CategoryServiceImpl implements CategoryService {
         return mapper.categoryToCategoryDto(category);
     }
 
+    private void checkNoEventWithCategoryExists(Long catId) {
+        Optional<Event> eventWitCat = eventRepository.findByCategoryId(catId);
+        if (eventWitCat.isPresent()) {
+            throw new EWMConflictException("Категория не может быть удалена, так как с ней связаны существющие события.");
+        }
+    }
+
     private Category getCategoryIfExists(Long catId) {
-        return repository.findById(catId)
+        return categoryRepository.findById(catId)
                 .orElseThrow(() -> new EWMElementNotFoundException(CATEGORY_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 
     private void updateCategoryByDto(Category category, CategoryDto categoryDto) {
-        category.setName(categoryDto.getName());
+        String name = categoryDto.getName();
+        if (Objects.nonNull(name)) {
+            category.setName(categoryDto.getName());
+        }
     }
 }

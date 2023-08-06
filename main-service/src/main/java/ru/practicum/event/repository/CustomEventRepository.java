@@ -1,7 +1,6 @@
 package ru.practicum.event.repository;
 
 import ru.practicum.event.dto.EventFilterParams;
-import ru.practicum.event.dto.EventFilterParamsDto;
 import ru.practicum.event.model.Event;
 
 import java.util.List;

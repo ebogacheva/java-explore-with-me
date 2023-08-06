@@ -36,7 +36,7 @@ public interface EventMapper {
     @Mapping(target = "views", ignore = true)
     EventFullDto eventToEventFullDto(Event event);
 
-    @Mapping(target = "categoryDto", source = "category")
+    @Mapping(target = "category", source = "category")
     @Mapping(target = "confirmedRequests", ignore = true)
     @Mapping(target = "eventDate", expression = "java(ru.practicum.utils.EWMDateTimeFormatter.localDateTimeToString(event.getEventDate()))")
     @Mapping(target = "initiator", source = "initiator")
@@ -44,8 +44,4 @@ public interface EventMapper {
     EventShortDto eventToEventShortDto(Event event);
 
     List<Event> pageToList(Page<Event> page);
-
-    @Mapping(target = "rangeEnd", expression = "java(end)")
-    @Mapping(target = "rangeStart", expression = "java(start)")
-    EventFilterParams eventFilterParamsDtoToEventFilterParams(EventFilterParamsDto eventFilterParamsDto, LocalDateTime start, LocalDateTime end);
 }

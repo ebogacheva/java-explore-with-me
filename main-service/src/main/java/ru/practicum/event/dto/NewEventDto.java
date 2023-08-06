@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@Builder
 public class NewEventDto {
 
     @NotNull
@@ -24,9 +24,11 @@ public class NewEventDto {
     private String eventDate;
     @NotNull
     private LocationDto location;
-    private Boolean paid;
+    @Builder.Default
+    private Boolean paid = Boolean.FALSE;
     @Min(0)
-    private Integer participantLimit;
+    @Builder.Default
+    private Integer participantLimit = 0;
     @Builder.Default
     private Boolean requestModeration = Boolean.TRUE;
     @Length(min = 3, max = 120)
