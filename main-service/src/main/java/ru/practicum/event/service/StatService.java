@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static ru.practicum.utils.EWMCommonConstants.EVENT_NOT_FOUND_EXCEPTION_MESSAGE;
+import static ru.practicum.utils.EWMCommonConstants.EVENT_NOT_FOUND_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +53,7 @@ public class StatService {
 
     private Event getEventIfExists(Long eventId) {
         return eventRepository.findById(eventId)
-                .orElseThrow(() -> new EWMElementNotFoundException(EVENT_NOT_FOUND_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new EWMElementNotFoundException(EVENT_NOT_FOUND_EXCEPTION));
     }
 
     private Long extractViews(ResponseEntity<Object> response) {

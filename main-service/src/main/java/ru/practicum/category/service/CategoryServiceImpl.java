@@ -18,8 +18,8 @@ import ru.practicum.exception.EWMElementNotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import static ru.practicum.utils.EWMCommonConstants.*;
 import static ru.practicum.utils.EWMCommonMethods.pageRequestOf;
 
 @Service
@@ -27,19 +27,17 @@ import static ru.practicum.utils.EWMCommonMethods.pageRequestOf;
 @Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
 
-    private static final String CATEGORY_NOT_FOUND_EXCEPTION_MESSAGE = "Категория не найдена.";
-
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
-    private final CategoryMapper mapper;
+    private final CategoryMapper catMapper;
 
     @Override
     @Transactional
     public CategoryDto create(NewCategoryDto category) {
-        Category newCategory = mapper.newCategoryDtoToCategory(category);
-        checkCategoryNameIsUnique(category.getName(), null);
+        Category newCategory = catMapper.toCategory(category);
+        checkNewCategoryNameIsUnique(category.getName());
         Category saved = categoryRepository.save(newCategory);
-        return mapper.categoryToCategoryDto(saved);
+        return catMapper.toCategoryDto(saved);
     }
 
     @Override
@@ -56,51 +54,49 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = getCategoryIfExists(catId);
         checkCategoryNameIsUnique(categoryDto.getName(), category.getName());
         updateCategoryByDto(category, categoryDto);
-        return mapper.categoryToCategoryDto(categoryRepository.save(category));
+        return catMapper.toCategoryDto(categoryRepository.save(category));
     }
 
     @Override
     public List<CategoryDto> get(Integer from, Integer size) {
         Pageable pageable = pageRequestOf(from, size);
-        Page<Category> categories = categoryRepository.findAll(pageable);
-        return mapper.pageToList(categories)
-                .stream()
-                .map(mapper::categoryToCategoryDto)
-                .collect(Collectors.toList());
+        Page<Category> catPage = categoryRepository.findAll(pageable);
+        return catPage.map(catMapper::toCategoryDto).getContent();
     }
 
     @Override
     public CategoryDto get(Long catId) {
         Category category = getCategoryIfExists(catId);
-        return mapper.categoryToCategoryDto(category);
+        return catMapper.toCategoryDto(category);
     }
 
     private void checkCategoryNameIsUnique(String newName, String name) {
-        if (newName.equals(name)) {
-            return;
-        }
-        Optional<Category> catWithNameExist = categoryRepository.findFirst1ByName(newName);
-        if (catWithNameExist.isPresent()) {
-            throw new EWMConflictException("Имя категории уже существует.");
+        if (!newName.equals(name)) {
+            categoryRepository.findFirst1ByName(newName).ifPresent(cat -> {
+                throw new EWMConflictException(CATEGORY_NAME_ALREADY_EXISTS_EXCEPTION);
+            });
         }
     }
 
+    private void checkNewCategoryNameIsUnique(String newName) {
+        checkCategoryNameIsUnique(newName, null);
+    }
+
     private void checkNoEventWithCategoryExists(Long catId) {
-        Optional<Event> eventWitCat = eventRepository.findByCategoryId(catId);
-        if (eventWitCat.isPresent()) {
-            throw new EWMConflictException("Категория не может быть удалена, так как с ней связаны существющие события.");
+        Optional<Event> eventWithCat = eventRepository.findByCategoryId(catId);
+        if (eventWithCat.isPresent()) {
+            throw new EWMConflictException(CATEGORY_IS_CONNECTED_WITH_EVENTS);
         }
     }
 
     private Category getCategoryIfExists(Long catId) {
         return categoryRepository.findById(catId)
-                .orElseThrow(() -> new EWMElementNotFoundException(CATEGORY_NOT_FOUND_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new EWMElementNotFoundException(CATEGORY_NOT_FOUND_EXCEPTION));
     }
 
     private void updateCategoryByDto(Category category, CategoryDto categoryDto) {
-        String name = categoryDto.getName();
-        if (Objects.nonNull(name)) {
-            category.setName(categoryDto.getName());
-        }
+        String newName = categoryDto.getName();
+        String existingName = category.getName();
+        category.setName(Objects.nonNull(newName) ? newName : existingName);
     }
 }

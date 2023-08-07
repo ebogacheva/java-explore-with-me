@@ -330,12 +330,12 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
 
     private Event getEventIfExists(Long eventId) {
         return eventRepository.findById(eventId)
-                .orElseThrow(() -> new EWMElementNotFoundException(EVENT_NOT_FOUND_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new EWMElementNotFoundException(EVENT_NOT_FOUND_EXCEPTION));
     }
 
     private Category getCategoryIfExists(Long catId) {
         return categoryRepository.findById(catId)
-                .orElseThrow(() -> new EWMElementNotFoundException(CATEGORY_NOT_FOUND_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new EWMElementNotFoundException(CATEGORY_NOT_FOUND_EXCEPTION));
     }
 
     private Location getLocation(LocationDto locationDto) {

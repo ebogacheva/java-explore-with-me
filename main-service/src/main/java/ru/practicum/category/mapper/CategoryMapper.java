@@ -13,9 +13,7 @@ import java.util.List;
 public interface CategoryMapper {
 
     @Mapping(target = "id", ignore = true)
-    Category newCategoryDtoToCategory(NewCategoryDto newCategoryDto);
+    Category toCategory(NewCategoryDto newCategoryDto);
 
-    CategoryDto categoryToCategoryDto(Category category);
-
-    List<Category> pageToList(Page<Category> page);
+    CategoryDto toCategoryDto(Category category);
 }
