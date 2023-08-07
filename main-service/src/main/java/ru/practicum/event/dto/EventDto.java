@@ -4,11 +4,10 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.user.dto.UserShortDto;
-import ru.practicum.utils.EWMDateTimeFormatter;
 
-import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.Objects;
+
+import static ru.practicum.utils.ExploreDateTimeFormatter.stringToLocalDateTime;
 
 @Getter
 @Setter
@@ -33,7 +32,7 @@ public class EventDto implements Comparable<EventDto>{
     }
 
     public static final Comparator<EventDto> EVENT_DATE_COMPARATOR =
-            Comparator.comparing((EventDto eventDto) -> EWMDateTimeFormatter.stringToLocalDateTime(eventDto.eventDate))
+            Comparator.comparing((EventDto eventDto) -> stringToLocalDateTime(eventDto.eventDate))
                     .thenComparing(EventDto::getId);;
 
     public static final Comparator<EventDto> VIEWS_COMPARATOR =

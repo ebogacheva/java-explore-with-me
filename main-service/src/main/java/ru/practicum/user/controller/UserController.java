@@ -15,20 +15,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-
     private final UserServiceImpl userService;
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto create(@Valid @RequestBody NewUserRequest request) {
+        return userService.create(request);
+    }
 
     @GetMapping
     public List<UserDto> get(@RequestParam(required = false) List<Long> ids,
                              @RequestParam(required = false, defaultValue = "0") Integer from,
                              @RequestParam(required = false, defaultValue = "10") Integer size) {
         return userService.get(ids, from, size);
-    }
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserDto create(@Valid @RequestBody NewUserRequest userRequest) {
-        return userService.create(userRequest);
     }
 
     @DeleteMapping(value = "/{userId}")

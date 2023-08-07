@@ -2,7 +2,7 @@ package ru.practicum.event.model;
 
 import ru.practicum.exception.EWMElementNotFoundException;
 
-import static ru.practicum.utils.EWMCommonConstants.EVENT_STATE_ACTION_NOT_FOUND_EXCEPTION;
+import static ru.practicum.utils.ExploreConstantsAndStaticMethods.EVENT_STATE_ACTION_NOT_FOUND_EXCEPTION;
 
 public enum EventStateAction {
     SEND_TO_REVIEW ("SEND_TO_REVIEW"),

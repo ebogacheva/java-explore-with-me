@@ -14,12 +14,9 @@ import java.util.List;
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
-    User newUserRequestToUser(NewUserRequest userRequest);
+    User toUser(NewUserRequest request);
 
-    UserDto userToUserDto(User user);
+    UserDto toUserDto(User user);
 
-    UserShortDto userToUserShortDto(User user);
-
-    List<User> pageToList(Page<User> page);
-
+    UserShortDto toUserShortDto(User user);
 }

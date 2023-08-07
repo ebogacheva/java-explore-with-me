@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static ru.practicum.utils.EWMCommonConstants.EVENT_NOT_FOUND_EXCEPTION;
+import static ru.practicum.utils.ExploreConstantsAndStaticMethods.EVENT_NOT_FOUND_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor

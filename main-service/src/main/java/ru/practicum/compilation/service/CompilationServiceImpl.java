@@ -17,8 +17,7 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ExploreConflictException;
 import ru.practicum.exception.EWMElementNotFoundException;
 
-import static ru.practicum.utils.EWMCommonConstants.*;
-import static ru.practicum.utils.EWMCommonMethods.pageRequestOf;
+import static ru.practicum.utils.ExploreConstantsAndStaticMethods.*;
 
 import java.util.Collections;
 import java.util.List;

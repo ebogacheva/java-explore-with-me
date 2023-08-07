@@ -6,14 +6,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
-import ru.practicum.event.dto.EventFilterParamsDto;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.mapper.LocationMapper;
 import ru.practicum.event.model.*;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.LocationRepository;
-import ru.practicum.exception.*;
+import ru.practicum.exception.EWMElementNotFoundException;
+import ru.practicum.exception.EWMIncorrectParamsException;
+import ru.practicum.exception.ExploreConflictException;
 import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.request.dto.ParticipationRequestDto;
@@ -23,8 +24,7 @@ import ru.practicum.request.model.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
-import ru.practicum.utils.EWMDateTimeFormatter;
-import ru.practicum.utils.EWMTimeDecoderUrl;
+import ru.practicum.utils.ExploreUrlDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -35,9 +35,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static ru.practicum.utils.EWMCommonConstants.*;
-import static ru.practicum.utils.EWMCommonMethods.pageRequestOf;
-import static ru.practicum.utils.EWMDateTimeFormatter.stringToLocalDateTime;
+import static ru.practicum.utils.ExploreConstantsAndStaticMethods.*;
+import static ru.practicum.utils.ExploreDateTimeFormatter.stringToLocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -171,7 +170,7 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
         Event event = getEventIfExists(eventId);
         checkEventDateIsAfterNow(event.getEventDate(), 1);
         if (request.getEventDate() != null) {
-            LocalDateTime targetDateTime = EWMDateTimeFormatter.stringToLocalDateTime(request.getEventDate());
+            LocalDateTime targetDateTime = stringToLocalDateTime(request.getEventDate());
             if (targetDateTime != null) {
                 checkEventDateIsAfterNow(targetDateTime, 2);
             }
@@ -241,12 +240,12 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
             LocalDateTime start;
             LocalDateTime end = null;
             if (Objects.nonNull(startString)) {
-                start = EWMTimeDecoderUrl.urlStringToLocalDateTime(startString);
+                start = ExploreUrlDecoder.urlStringToLocalDateTime(startString);
             } else {
                 start = LocalDateTime.now();
             }
             if (Objects.nonNull(endString)) {
-                end = EWMTimeDecoderUrl.urlStringToLocalDateTime(endString);
+                end = ExploreUrlDecoder.urlStringToLocalDateTime(endString);
                 if (end.isBefore(start)) {
                     throw new EWMIncorrectParamsException("Некорретный запрос.");
                 }

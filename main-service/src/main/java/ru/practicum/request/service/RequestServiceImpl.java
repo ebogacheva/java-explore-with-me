@@ -19,8 +19,8 @@ import ru.practicum.user.repository.UserRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.utils.EWMCommonConstants.EVENT_NOT_FOUND_EXCEPTION;
-import static ru.practicum.utils.EWMCommonConstants.USER_NOT_FOUND_EXCEPTION_MESSAGE;
+import static ru.practicum.utils.ExploreConstantsAndStaticMethods.EVENT_NOT_FOUND_EXCEPTION;
+import static ru.practicum.utils.ExploreConstantsAndStaticMethods.USER_NOT_FOUND_EXCEPTION_MESSAGE;
 
 @Service
 @RequiredArgsConstructor

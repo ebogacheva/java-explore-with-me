@@ -8,6 +8,6 @@ import java.util.List;
 public interface UserService {
 
     List<UserDto> get(List<Long> ids, Integer from, Integer size);
-    UserDto create(NewUserRequest user);
+    UserDto create(NewUserRequest request);
     void delete(Long userId);
 }

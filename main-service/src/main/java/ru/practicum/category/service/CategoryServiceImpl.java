@@ -19,8 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static ru.practicum.utils.EWMCommonConstants.*;
-import static ru.practicum.utils.EWMCommonMethods.pageRequestOf;
+import static ru.practicum.utils.ExploreConstantsAndStaticMethods.*;
 
 @Service
 @RequiredArgsConstructor
