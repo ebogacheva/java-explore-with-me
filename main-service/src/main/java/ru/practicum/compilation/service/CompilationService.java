@@ -4,13 +4,12 @@ import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 public interface CompilationService {
-    CompilationDto create(NewCompilationDto newCompilationDto);
+    CompilationDto create(NewCompilationDto newCompDto);
 
-    CompilationDto update(Long compId, UpdateCompilationRequest updateCompilationRequest);
+    CompilationDto update(Long compId, UpdateCompilationRequest request);
 
     void delete(Long compId);
 

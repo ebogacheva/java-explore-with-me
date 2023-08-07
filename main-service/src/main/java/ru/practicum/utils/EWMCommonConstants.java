@@ -14,4 +14,9 @@ public class EWMCommonConstants {
         /*----------Event String Utils------------*/
         public static final String EVENT_NOT_FOUND_EXCEPTION = "Event not found.";
         public static final String EVENT_STATE_ACTION_NOT_FOUND_EXCEPTION = "Event-state-action not found.";
+
+        /*----------Compilation String Utils------------*/
+        public static final String EVENTS_FROM_COMPILATION_NOT_FOUND = "Some events from the compilation not found.";
+        public static final String COMPILATION_NOT_FOUND = "Compilation not found.";
+        public static final String COMPILATION_TITLE_ALREADY_EXIST = "Compilation title already exists and could not be used";
 }

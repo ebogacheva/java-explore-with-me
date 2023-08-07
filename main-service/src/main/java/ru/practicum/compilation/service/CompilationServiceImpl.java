@@ -17,7 +17,10 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ExploreConflictException;
 import ru.practicum.exception.EWMElementNotFoundException;
 
+import static ru.practicum.utils.EWMCommonConstants.*;
 import static ru.practicum.utils.EWMCommonMethods.pageRequestOf;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,7 +28,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository compilationRepository;
@@ -35,13 +37,12 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
-    public CompilationDto create(NewCompilationDto newCompilationDto) {
-        List<Long> ids = newCompilationDto.getEvents();
-        List<Event> events = getEvents(ids);
-        Compilation newCompilation = compilationMapper.newCompilationDtoToCompilation(newCompilationDto, events);
-        Compilation compilation = compilationRepository.save(newCompilation);
-        List<EventShortDto> dtos = getShortEventDtos(events);
-        return compilationMapper.toCompilationDto(compilation, dtos);
+    public CompilationDto create(NewCompilationDto newCompDto) {
+        List<Event> events = fetchEvents(newCompDto.getEvents());
+        Compilation newComp = compilationMapper.toCompilation(newCompDto, events);
+        Compilation savedComp = compilationRepository.save(newComp);
+        List<EventShortDto> dtos = getEventShortDtos(events); // TODO: обязательно попробовать что работает без передачи листа ДТО
+        return compilationMapper.toCompilationDto(savedComp, dtos);
     }
 
     @Override
@@ -49,9 +50,9 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto update(Long compId, UpdateCompilationRequest request) {
         Compilation compilation = getCompilationIfExist(compId);
         updateCompilation(compilation, request);
-        Compilation updated = compilationRepository.save(compilation);
-        List<EventShortDto> dtos = getShortEventDtos(updated.getEvents());
-        return compilationMapper.toCompilationDto(compilation, dtos);
+        Compilation updatedComp = compilationRepository.save(compilation);
+        List<EventShortDto> dtos = getEventShortDtos(updatedComp.getEvents());
+        return compilationMapper.toCompilationDto(updatedComp, dtos);
     }
 
     @Override
@@ -64,55 +65,68 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public List<CompilationDto> getAll(Boolean pinned, Integer from, Integer size) {
         Page<Compilation> compilations = compilationRepository.findAllByPinned(pinned, pageRequestOf(from, size));
-        return compilationMapper.pageToList(compilations)
-                .stream()
-                .map(compilationMapper::toCompilationDto)
-                .collect(Collectors.toList());
+        return compilations.map(compilationMapper::toCompilationDto).getContent();
     }
 
     @Override
     public CompilationDto get(Long compId) {
-        return compilationMapper.toCompilationDto(getCompilationIfExist(compId));
-    }
-
-    private List<EventShortDto> getShortEventDtos(List<Event> events) {
-        return events.stream().map(eventMapper::eventToEventShortDto).collect(Collectors.toList());
-    }
-
-    private void updateCompilation(Compilation compilation, UpdateCompilationRequest request) {
-        List<Long> ids = request.getEvents();
-        if (Objects.nonNull(ids)) {
-            List<Event> updatedList = getEvents(ids);
-            compilation.setEvents(updatedList);
-        }
-        Boolean pinned = request.getPinned();
-        if (Objects.nonNull(pinned)) {
-            compilation.setPinned(pinned);
-        }
-        String title = request.getTitle();
-        if (Objects.nonNull(title)) {
-            Optional<Compilation> titleIsNotUnique = compilationRepository.findFirst1ByTitle(title);
-            if (titleIsNotUnique.isPresent() && !compilation.getTitle().equals(title)) {
-                throw new ExploreConflictException("Данный заголовок подборки уже существует.");
-            }
-            compilation.setTitle(title);
-        }
-    }
-
-    private List<Event> getEvents(List<Long> eventIds) {
-        if (!eventIds.isEmpty()) {
-            List<Event> events = eventRepository.findAllByIdIn(eventIds);
-            if (events.size() < eventIds.size()) {
-                throw new EWMElementNotFoundException("События из подборки не найдены.");
-            }
-            return events;
-        }
-        return List.of();
+        Compilation compilation = getCompilationIfExist(compId);
+        return compilationMapper.toCompilationDto(compilation);
     }
 
     private Compilation getCompilationIfExist(Long comId) {
         return compilationRepository.findById(comId)
-                .orElseThrow(() -> new EWMElementNotFoundException("Подборка не найдена."));
+                .orElseThrow(() -> new EWMElementNotFoundException(COMPILATION_NOT_FOUND));
     }
 
+    private List<Event> fetchEvents(List<Long> eventIds) {
+        if (eventIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Event> events = eventRepository.findAllByIdIn(eventIds);
+        checkAllEventsFound(events, eventIds);
+        return events;
+    }
+
+    private void checkAllEventsFound(List<Event> events, List<Long> eventIds) {
+        if (events.size() < eventIds.size()) { // TODO: Есть ощущение, что это не нужно
+            throw new EWMElementNotFoundException(EVENTS_FROM_COMPILATION_NOT_FOUND);
+        }
+    }
+
+    private List<EventShortDto> getEventShortDtos(List<Event> events) {
+        return events.stream().map(eventMapper::eventToEventShortDto).collect(Collectors.toList());
+    }
+
+    private void updateCompilation(Compilation comp, UpdateCompilationRequest request) {
+        updateEvents(comp, request.getEvents());
+        updatedPinned(comp, request.getPinned());
+        updateTitle(comp, request.getTitle());
+    }
+
+    private void updateEvents(Compilation comp, List<Long> eventIds) {
+        if (Objects.nonNull(eventIds)) {
+            List<Event> updatedEvents = fetchEvents(eventIds);
+            comp.setEvents(updatedEvents);
+        }
+    }
+
+    private void updatedPinned(Compilation comp, Boolean pinned) {
+        if (Objects.nonNull(pinned)) {
+            comp.setPinned(pinned);
+        }
+    }
+
+    private void updateTitle(Compilation comp, String newTitle) {
+        if (Objects.nonNull(newTitle)) {
+            checkTitleNotUnique(newTitle, comp.getTitle(), comp.getId());
+        }
+    }
+
+    private void checkTitleNotUnique(String newTitle, String title, Long compId) {
+        Optional<Compilation> titleNotUnique = compilationRepository.findFirst1ByTitleAndIdNotIn(newTitle, List.of(compId));
+        titleNotUnique.ifPresent((cmp) -> {
+            throw new ExploreConflictException(COMPILATION_TITLE_ALREADY_EXIST);
+        });
+    }
 }

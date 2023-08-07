@@ -3,17 +3,18 @@ package ru.practicum.compilation.dto;
 import lombok.*;
 import ru.practicum.event.dto.EventShortDto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class CompilationDto {
 
-    Long id;
-    String title;
-    Boolean pinned;
-    List<EventShortDto> events;
+    private Long id;
+    private String title;
+    private Boolean pinned;
+    private List<EventShortDto> events = new ArrayList<>();
 }

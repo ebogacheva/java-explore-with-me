@@ -8,9 +8,9 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder(toBuilder = true)
 public class CategoryDto {
 
     private Long id;

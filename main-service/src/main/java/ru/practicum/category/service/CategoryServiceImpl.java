@@ -24,7 +24,6 @@ import static ru.practicum.utils.EWMCommonMethods.pageRequestOf;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -43,16 +42,16 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void delete(Long catId) {
-        getCategoryIfExists(catId);
+        Category category = getCategoryIfExists(catId);
         checkNoEventWithCatExists(catId);
-        categoryRepository.deleteById(catId);
+        categoryRepository.delete(category);
     }
 
     @Override
     @Transactional
     public CategoryDto update(CategoryDto categoryDto, Long catId) {
         Category category = getCategoryIfExists(catId);
-        checkCatNameIsUnique(categoryDto.getName(), category.getName());
+        checkNewCatNameIsUnique(categoryDto.getName(), category.getName());
         updateCategoryByDto(category, categoryDto);
         return catMapper.toCategoryDto(categoryRepository.save(category));
     }
@@ -70,7 +69,7 @@ public class CategoryServiceImpl implements CategoryService {
         return catMapper.toCategoryDto(category);
     }
 
-    private void checkCatNameIsUnique(String newName, String name) {
+    private void checkNewCatNameIsUnique(String newName, String name) {
         if (!newName.equals(name)) {
             categoryRepository.findFirst1ByName(newName).ifPresent(cat -> {
                 throw new ExploreConflictException(CATEGORY_NAME_ALREADY_EXISTS_EXCEPTION);
@@ -79,7 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private void checkNewCatNameIsUnique(String newName) {
-        checkCatNameIsUnique(newName, null);
+        checkNewCatNameIsUnique(newName, null);
     }
 
     private void checkNoEventWithCatExists(Long catId) {
