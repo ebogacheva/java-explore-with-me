@@ -12,7 +12,7 @@ import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exception.EWMConflictException;
+import ru.practicum.exception.ExploreConflictException;
 import ru.practicum.exception.EWMElementNotFoundException;
 
 import java.util.List;
@@ -35,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto create(NewCategoryDto category) {
         Category newCategory = catMapper.toCategory(category);
-        checkNewCategoryNameIsUnique(category.getName());
+        checkNewCatNameIsUnique(category.getName());
         Category saved = categoryRepository.save(newCategory);
         return catMapper.toCategoryDto(saved);
     }
@@ -44,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void delete(Long catId) {
         getCategoryIfExists(catId);
-        checkNoEventWithCategoryExists(catId);
+        checkNoEventWithCatExists(catId);
         categoryRepository.deleteById(catId);
     }
 
@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto update(CategoryDto categoryDto, Long catId) {
         Category category = getCategoryIfExists(catId);
-        checkCategoryNameIsUnique(categoryDto.getName(), category.getName());
+        checkCatNameIsUnique(categoryDto.getName(), category.getName());
         updateCategoryByDto(category, categoryDto);
         return catMapper.toCategoryDto(categoryRepository.save(category));
     }
@@ -70,22 +70,22 @@ public class CategoryServiceImpl implements CategoryService {
         return catMapper.toCategoryDto(category);
     }
 
-    private void checkCategoryNameIsUnique(String newName, String name) {
+    private void checkCatNameIsUnique(String newName, String name) {
         if (!newName.equals(name)) {
             categoryRepository.findFirst1ByName(newName).ifPresent(cat -> {
-                throw new EWMConflictException(CATEGORY_NAME_ALREADY_EXISTS_EXCEPTION);
+                throw new ExploreConflictException(CATEGORY_NAME_ALREADY_EXISTS_EXCEPTION);
             });
         }
     }
 
-    private void checkNewCategoryNameIsUnique(String newName) {
-        checkCategoryNameIsUnique(newName, null);
+    private void checkNewCatNameIsUnique(String newName) {
+        checkCatNameIsUnique(newName, null);
     }
 
-    private void checkNoEventWithCategoryExists(Long catId) {
+    private void checkNoEventWithCatExists(Long catId) {
         Optional<Event> eventWithCat = eventRepository.findByCategoryId(catId);
         if (eventWithCat.isPresent()) {
-            throw new EWMConflictException(CATEGORY_IS_CONNECTED_WITH_EVENTS);
+            throw new ExploreConflictException(CATEGORY_IS_CONNECTED_WITH_EVENTS);
         }
     }
 

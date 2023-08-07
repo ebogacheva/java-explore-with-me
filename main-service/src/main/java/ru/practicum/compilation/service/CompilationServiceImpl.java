@@ -14,7 +14,7 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exception.EWMConflictException;
+import ru.practicum.exception.ExploreConflictException;
 import ru.practicum.exception.EWMElementNotFoundException;
 
 import static ru.practicum.utils.EWMCommonMethods.pageRequestOf;
@@ -93,7 +93,7 @@ public class CompilationServiceImpl implements CompilationService {
         if (Objects.nonNull(title)) {
             Optional<Compilation> titleIsNotUnique = compilationRepository.findFirst1ByTitle(title);
             if (titleIsNotUnique.isPresent() && !compilation.getTitle().equals(title)) {
-                throw new EWMConflictException("Данный заголовок подборки уже существует.");
+                throw new ExploreConflictException("Данный заголовок подборки уже существует.");
             }
             compilation.setTitle(title);
         }

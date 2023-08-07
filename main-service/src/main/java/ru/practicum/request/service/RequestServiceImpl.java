@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exception.EWMConflictException;
+import ru.practicum.exception.ExploreConflictException;
 import ru.practicum.exception.EWMElementNotFoundException;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.mapper.ParticipationRequestMapper;
@@ -89,7 +89,7 @@ public class RequestServiceImpl implements RequestService {
 
     private void checkIfRequestExists(Long userId, Long eventId) {
         if (requestRepository.findFirst1ByEventIdAndRequesterId(eventId, userId).isPresent()) {
-            throw new EWMConflictException("Такой запрос на участие уже существует.");
+            throw new ExploreConflictException("Такой запрос на участие уже существует.");
         }
     }
 
@@ -101,13 +101,13 @@ public class RequestServiceImpl implements RequestService {
     private static void checkUserIsInitiator(Long userId, Event event) {
         Long initiatorId = event.getInitiator().getId();
         if(userId.equals(initiatorId)) {
-            throw new EWMConflictException("Пользователь не может добавить запрос на участие в своем событии.");
+            throw new ExploreConflictException("Пользователь не может добавить запрос на участие в своем событии.");
         }
     }
 
     private static void checkEventIsPublished(Event event) {
         if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new EWMConflictException("Пользователь не может добавить запрос на участие в неопубликованном событии.");
+            throw new ExploreConflictException("Пользователь не может добавить запрос на участие в неопубликованном событии.");
         }
     }
 
@@ -115,7 +115,7 @@ public class RequestServiceImpl implements RequestService {
         Long participants = requestRepository.countByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED);
         Long limit = event.getParticipantLimit();
         if (participants >= limit) {
-            throw new EWMConflictException("Достигнут лимит участников в событии.");
+            throw new ExploreConflictException("Достигнут лимит участников в событии.");
         }
     }
 }

@@ -147,7 +147,7 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
                 .filter(request -> request.getStatus() != RequestStatus.PENDING)
                 .findAny();
         if (notPending.isPresent()) {
-            throw new EWMConflictException("Статус запроса изменить невозможно");
+            throw new ExploreConflictException("Статус запроса изменить невозможно");
         }
     }
 
@@ -265,14 +265,14 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
                     .sort(paramsDto.getSort())
                     .build();
         } catch (UnsupportedEncodingException e) {
-            throw new EWMConflictException("Некорретный запрос.");
+            throw new ExploreConflictException("Некорретный запрос.");
         }
         return params;
     }
 
     private void publishEvent(UpdateEventAdminRequest request, Event event) {
         if(event.getState() != EventState.PENDING) {
-            throw new EWMConflictException("Событие не может быть опубликовано.");
+            throw new ExploreConflictException("Событие не может быть опубликовано.");
         } else {
             updateEventFields(request, event);
             event.setState(EventState.PUBLISHED);
@@ -284,7 +284,7 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
         if (event.getState() == EventState.PENDING) {
             event.setState(EventState.REJECTED);
         } else {
-            throw new EWMConflictException("Событие не может быть отклонено.");
+            throw new ExploreConflictException("Событие не может быть отклонено.");
         }
     }
 
@@ -297,7 +297,7 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
                 int start = requestsToUpdate.indexOf(request);
                 int end = requestsToUpdate.size();
                 rejectRequests(requestsToUpdate.subList(start, end), result);
-                throw new EWMConflictException("Достигнут лимит участников в событии.");
+                throw new ExploreConflictException("Достигнут лимит участников в событии.");
             }
             confirmRequests(List.of(request), result);
             confirmed++;
@@ -474,7 +474,7 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
 
     private void checkEventStateInList(Event event, List<EventState> states) {
         if (!states.contains(event.getState())) {
-            throw new EWMConflictException("Некорректный статус события.");
+            throw new ExploreConflictException("Некорректный статус события.");
         }
     }
 }

@@ -51,7 +51,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handle(final EWMConflictException e) {
+    public ErrorResponse handle(final ExploreConflictException e) {
         return new ErrorResponse("Update request status error: ", e.getMessage());
     }
 

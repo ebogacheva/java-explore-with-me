@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.exception.EWMConflictException;
+import ru.practicum.exception.ExploreConflictException;
 import ru.practicum.exception.EWMElementNotFoundException;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.dto.UserDto;
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     private void checkUserNameIsUnique(String name) {
         Optional<User> userWithNameExist = repository.findFirst1ByName(name);
         if (userWithNameExist.isPresent()) {
-            throw new EWMConflictException("Пользователь с таким именем уже существует.");
+            throw new ExploreConflictException("Пользователь с таким именем уже существует.");
         }
     }
 
