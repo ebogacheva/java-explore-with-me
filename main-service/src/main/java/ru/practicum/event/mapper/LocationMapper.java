@@ -10,6 +10,4 @@ public interface LocationMapper {
 
     @Mapping(target = "id", ignore = true)
     Location locationDtoToLocation(LocationDto locationDto);
-
-    LocationDto locationToLocationDto(Location location);
 }

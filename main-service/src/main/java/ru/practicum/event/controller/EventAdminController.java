@@ -5,9 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventFilterParamsDto;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
-import ru.practicum.event.service.EventServiceImpl;
-
-import javax.servlet.http.HttpServletRequest;
+import ru.practicum.event.service.AdminEventService;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -16,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventAdminController {
 
-    private final EventServiceImpl eventService;
+    private final AdminEventService eventService;
 
     @GetMapping
     List<EventFullDto> getByAdmin(@Valid @ModelAttribute EventFilterParamsDto params) {
@@ -25,9 +23,7 @@ public class EventAdminController {
 
     @PatchMapping(value = "/{eventId}")
     EventFullDto update(@PathVariable Long eventId,
-                        @RequestBody UpdateEventAdminRequest request) {
+                        @Valid @RequestBody UpdateEventAdminRequest request) {
         return eventService.update(request, eventId);
     }
-
-
 }

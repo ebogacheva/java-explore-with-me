@@ -15,7 +15,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class EventDto {
+public class EventDto implements Comparable<EventDto>{
 
     private Long id;
     private String annotation;
@@ -27,17 +27,16 @@ public class EventDto {
     private String title;
     private Long views;
 
-    public static final Comparator<EventDto> EVENT_DATE_COMPARATOR = (o1, o2) -> {
-        LocalDateTime eventDate1 = EWMDateTimeFormatter.stringToLocalDateTime(o1.eventDate);
-        LocalDateTime eventDate2 = EWMDateTimeFormatter.stringToLocalDateTime(o2.eventDate);
-        Objects.requireNonNull(eventDate1);
-        Objects.requireNonNull(eventDate2);
-        return eventDate2.compareTo(eventDate1);
-    };
+    @Override
+    public int compareTo(EventDto other) {
+        return this.id.compareTo(other.id);
+    }
 
-    public static final Comparator<EventDto> VIEWS_COMPARATOR = (o1, o2) -> {
-        Long views1 = o1.getViews();
-        Long views2 = o2.getViews();
-        return views2.compareTo(views1);
-    };
+    public static final Comparator<EventDto> EVENT_DATE_COMPARATOR =
+            Comparator.comparing((EventDto eventDto) -> EWMDateTimeFormatter.stringToLocalDateTime(eventDto.eventDate))
+                    .thenComparing(EventDto::getId);;
+
+    public static final Comparator<EventDto> VIEWS_COMPARATOR =
+            Comparator.comparing(EventDto::getViews)
+                    .thenComparing(EventDto::getId);
 }

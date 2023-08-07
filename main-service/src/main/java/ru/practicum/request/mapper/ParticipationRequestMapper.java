@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.model.ParticipationRequest;
 
-import ru.practicum.utils.EWMDateTimeFormatter;
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ParticipationRequestMapper {
@@ -13,5 +13,7 @@ public interface ParticipationRequestMapper {
     @Mapping(target = "created", expression = "java(ru.practicum.utils.EWMDateTimeFormatter.localDateTimeToString(request.getCreated()))")
     @Mapping(target = "requester", expression = "java(request.getRequester().getId())")
     @Mapping(target = "status", expression = "java(request.getStatus().getName())")
-    ParticipationRequestDto participationRequestToParticipationRequestDto(ParticipationRequest request);
+    ParticipationRequestDto toParticipationRequestDto(ParticipationRequest request);
+
+    List<ParticipationRequestDto> toParticipationRequestDtoList(List<ParticipationRequest> requests);
 }

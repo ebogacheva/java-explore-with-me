@@ -16,6 +16,7 @@ import ru.practicum.stats_dto.ViewStats;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static ru.practicum.utils.EWMCommonConstants.EVENT_NOT_FOUND_EXCEPTION_MESSAGE;
@@ -46,7 +47,7 @@ public class StatService {
         LocalDateTime start = event.getPublishedOn();
         LocalDateTime end = LocalDateTime.now();
         String uri = "/events/" + event.getId();
-        ResponseEntity<Object> response = statsClient.getStats(start, end, List.of(uri), null);
+        ResponseEntity<Object> response = statsClient.getStats(start, end, List.of(uri), true);
         return extractViews(response);
     }
 
@@ -58,7 +59,7 @@ public class StatService {
     private Long extractViews(ResponseEntity<Object> response) {
         try {
             String responseValue = mapper.writeValueAsString(response.getBody());
-            List<ViewStats> viewStats = mapper.readValue(responseValue, new TypeReference<>() {});
+            List<ViewStats> viewStats = Arrays.asList(mapper.readValue(responseValue, new TypeReference<>(){}));
             return viewStats.isEmpty() ? 0 : viewStats.get(0).getHits();
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

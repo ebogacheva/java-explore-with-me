@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventFilterParamsDto;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.service.EventServiceImpl;
+import ru.practicum.event.service.PublicEventService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventPublicController {
 
-    private final EventServiceImpl eventService;
+    private final PublicEventService eventService;
 
     @GetMapping
     List<EventShortDto> get(@Valid @ModelAttribute EventFilterParamsDto params,
@@ -25,8 +25,8 @@ public class EventPublicController {
     }
 
     @GetMapping(value = "/{id}")
-    EventFullDto get(@PathVariable Long id) {
-        return eventService.get(id);
+    EventFullDto get(@PathVariable Long id,
+                     HttpServletRequest request) {
+        return eventService.get(id, request);
     }
-
 }

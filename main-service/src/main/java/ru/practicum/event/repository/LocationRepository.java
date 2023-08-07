@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface LocationRepository extends JpaRepository<Location, Long> {
 
-    Optional<Location> getByLatAndLot(Double lat, Double lot);
+    Optional<Location> getByLatAndLon(Double lat, Double lon);
 }

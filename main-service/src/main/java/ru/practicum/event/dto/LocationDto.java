@@ -21,5 +21,5 @@ public class LocationDto {
     @NotNull
     @DecimalMin(value = "-180.0")
     @DecimalMax(value = "180.0")
-    private Double lot;
+    private Double lon;
 }

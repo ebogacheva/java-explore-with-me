@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.category.controller.CategoryAdminController;
 import ru.practicum.category.controller.CategoryPublicController;
+import ru.practicum.compilation.controller.AdminCompilationController;
+import ru.practicum.compilation.controller.PublicCompilationController;
 import ru.practicum.event.controller.EventAdminController;
+import ru.practicum.event.controller.EventPrivateController;
 import ru.practicum.event.controller.EventPublicController;
 import ru.practicum.request.controller.RequestController;
 import ru.practicum.user.controller.UserController;
@@ -21,7 +24,10 @@ import javax.validation.ConstraintViolationException;
         CategoryPublicController.class,
         RequestController.class,
         EventAdminController.class,
-        EventPublicController.class
+        EventPublicController.class,
+        EventPrivateController.class,
+        AdminCompilationController.class,
+        PublicCompilationController.class
 })
 public class ErrorHandler {
 

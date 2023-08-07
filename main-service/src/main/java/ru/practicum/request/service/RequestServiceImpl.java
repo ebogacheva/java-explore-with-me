@@ -2,6 +2,7 @@ package ru.practicum.request.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventState;
 import ru.practicum.event.repository.EventRepository;
@@ -23,6 +24,7 @@ import static ru.practicum.utils.EWMCommonConstants.USER_NOT_FOUND_EXCEPTION_MES
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RequestServiceImpl implements RequestService {
 
     private final RequestRepository requestRepository;
@@ -36,11 +38,12 @@ public class RequestServiceImpl implements RequestService {
         getUserIfExists(userId);
         List<ParticipationRequest> requests = requestRepository.findByRequesterId(userId);
         return requests.stream()
-                .map(mapper::participationRequestToParticipationRequestDto)
+                .map(mapper::toParticipationRequestDto)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public ParticipationRequestDto create(Long userId, Long eventId) {
         checkIfRequestExists(userId, eventId);
         Event event = getEventIfExists(eventId);
@@ -50,21 +53,23 @@ public class RequestServiceImpl implements RequestService {
             checkParticipantsLimitIsReached(event);
         }
         ParticipationRequest request = completeNewRequest(userId, event);
-        return mapper.participationRequestToParticipationRequestDto(requestRepository.save(request));
+        return mapper.toParticipationRequestDto(requestRepository.save(request));
     }
 
     @Override
+    @Transactional
     public ParticipationRequestDto cancel(Long userId, Long requestId) {
         getUserIfExists(userId);
         ParticipationRequest request = getRequestIfExists(requestId);
         request.setStatus(RequestStatus.CANCELED);
-        return mapper.participationRequestToParticipationRequestDto(requestRepository.save(request));
+        return mapper.toParticipationRequestDto(requestRepository.save(request));
     }
 
     private ParticipationRequest completeNewRequest(Long userId, Event event) {
         User user = getUserIfExists(userId);
-        boolean doNotNeedConfirmation = event.getRequestModeration() || event.getParticipantLimit() == 0;
-        RequestStatus status = doNotNeedConfirmation ? RequestStatus.CONFIRMED : RequestStatus.PENDING;
+        boolean needConfirmation = event.getRequestModeration();
+        boolean hasParticipantsLimit = event.getParticipantLimit() != 0;
+        RequestStatus status = needConfirmation && hasParticipantsLimit ? RequestStatus.PENDING : RequestStatus.CONFIRMED;
         return ParticipationRequest.builder()
                 .requester(user)
                 .status(status)
@@ -107,9 +112,9 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private void checkParticipantsLimitIsReached(Event event) {
-        Long requests = requestRepository.countByEventId(event.getId());
+        Long participants = requestRepository.countByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED);
         Long limit = event.getParticipantLimit();
-        if (requests >= limit) {
+        if (participants >= limit) {
             throw new EWMConflictException("Достигнут лимит участников в событии.");
         }
     }

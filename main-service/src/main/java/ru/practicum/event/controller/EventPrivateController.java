@@ -7,7 +7,7 @@ import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventUserRequest;
-import ru.practicum.event.service.EventServiceImpl;
+import ru.practicum.event.service.PrivateEventService;
 import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.request.dto.ParticipationRequestDto;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventPrivateController {
 
-    private final EventServiceImpl eventService;
+    private final PrivateEventService eventService;
 
     @GetMapping(value = "/{userId}/events")
     List<EventShortDto> getEvents(@PathVariable Long userId,
@@ -58,11 +58,7 @@ public class EventPrivateController {
     @PatchMapping(value = "/{userId}/events/{eventId}/requests")
     EventRequestStatusUpdateResult update(@PathVariable Long userId,
                                           @PathVariable Long eventId,
-                                          @Valid @RequestBody EventRequestStatusUpdateRequest updateRequest) {
+                                          @RequestBody EventRequestStatusUpdateRequest updateRequest) {
         return eventService.update(updateRequest, userId, eventId);
     }
-
-
-
-
 }

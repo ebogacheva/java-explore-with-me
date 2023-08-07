@@ -2,8 +2,8 @@ package ru.practicum.event.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.dto.EventFilterParamsDto;
@@ -13,10 +13,7 @@ import ru.practicum.event.mapper.LocationMapper;
 import ru.practicum.event.model.*;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.LocationRepository;
-import ru.practicum.exception.EWMConflictException;
-import ru.practicum.exception.EWMElementNotFoundException;
-import ru.practicum.exception.EWMRequestConfirmForbiddenException;
-import ru.practicum.exception.EWMUpdateForbiddenException;
+import ru.practicum.exception.*;
 import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.request.dto.ParticipationRequestDto;
@@ -35,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.utils.EWMCommonConstants.*;
@@ -43,48 +41,53 @@ import static ru.practicum.utils.EWMDateTimeFormatter.stringToLocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class EventServiceImpl implements EventService {
+@Transactional(readOnly = true)
+public class EventServiceImpl implements AdminEventService, PublicEventService, PrivateEventService {
 
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final RequestRepository requestRepository;
-    private final EventMapper eventMapper;
-    private final LocationMapper locationMapper;
     private final CategoryRepository categoryRepository;
     private final LocationRepository locationRepository;
+
+    private final EventMapper eventMapper;
+    private final LocationMapper locationMapper;
     private final ParticipationRequestMapper participationRequestMapper;
+
     private final StatService statService;
 
     @Override
     public List<EventShortDto> getEvents(Long userId, Integer from, Integer size) {
         getUserIfExists(userId);
-        Pageable pageable = pageRequestOf(from, size);
-        Page<Event> pageOfEvents = eventRepository.findByInitiatorId(userId, pageable);
-        List<Event> listOfEvents = eventMapper.pageToList(pageOfEvents);
-        return listOfEvents.stream()
+        Page<Event> pageOfEvents = eventRepository.findByInitiatorId(userId, pageRequestOf(from, size));
+        return eventMapper.pageToList(pageOfEvents)
+                .stream()
                 .map(eventMapper::eventToEventShortDto)
                 .map(this::completeEventShortDto)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public EventFullDto create(NewEventDto newEventDto, Long userId) {
         Event newEvent = completeNewEvent(newEventDto, userId);
+        checkEventDateIsAfterNow(newEvent.getEventDate(), 2);
         Event savedEvent = eventRepository.save(newEvent);
         return completeEventFullDto(savedEvent);
     }
 
     @Override
     public EventFullDto getEvent(Long userId, Long eventId) {
-        getUserIfExists(userId); // TODO: do we need this checking?
-        Event event = getEventIfExists(eventId); // TODO: do we need to check that user is an initiator of the event?
+        getUserIfExists(userId);
+        Event event = getEventIfExists(eventId);
         return completeEventFullDto(event);
     }
 
     @Override
+    @Transactional
     public EventFullDto update(UpdateEventUserRequest request, Long userId, Long eventId) {
-        getUserIfExists(userId); // TODO: do we need this checking?
-        Event event = getEventIfExists(eventId); // TODO: do we need to check that user is an initiator of the event?
+        getUserIfExists(userId);
+        Event event = getEventIfExists(eventId);
         checkEventStateInList(event, List.of(EventState.PENDING, EventState.CANCELED, EventState.REJECTED));
         updateEvent(request, event);
         eventRepository.save(event);
@@ -96,32 +99,30 @@ public class EventServiceImpl implements EventService {
         getUserIfExists(userId);
         return requestRepository.findByEventId(eventId)
                 .stream()
-                .map(participationRequestMapper::participationRequestToParticipationRequestDto)
+                .map(participationRequestMapper::toParticipationRequestDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public EventRequestStatusUpdateResult update(EventRequestStatusUpdateRequest updateRequest, Long userId, Long eventId) {
+    @Transactional
+    public EventRequestStatusUpdateResult update(EventRequestStatusUpdateRequest update, Long userId, Long eventId) {
         getUserIfExists(userId);
         Event event = getEventIfExists(eventId);
-        List<Long> ids = updateRequest.getRequestIds();
-        RequestStatus status = RequestStatus.valueOf(updateRequest.getRequestStatus());
+        List<Long> ids = update.getRequestIds();
+
         EventRequestStatusUpdateResult result = new EventRequestStatusUpdateResult();
-        if (!event.getRequestModeration()) {
+        if (!event.getRequestModeration() ||
+                event.getParticipantLimit() == 0 ||
+                update.getRequestIds().isEmpty()) {
             return result;
         }
-        if (event.getParticipantLimit() == 0) {
-            return result;
-        }
-        List<ParticipationRequest> requestsToUpdate =
-                requestRepository.findByEventId(eventId)
-                        .stream()
-                        .filter(request -> ids.contains(request.getId()))
-                        .collect(Collectors.toList());
+        List<ParticipationRequest> requestsToUpdate = requestRepository.findAllByIdIn(ids);
+        checkAllRequestsPending(requestsToUpdate);
+        RequestStatus status = RequestStatus.valueOf(update.getStatus());
         if (status == RequestStatus.CONFIRMED) {
             confirmRequests(requestsToUpdate, result, event);
         } else if (status == RequestStatus.REJECTED) {
-            rejectRequests(requestsToUpdate, result, event);
+            rejectRequests(requestsToUpdate, result);
         }
         return result;
     }
@@ -135,10 +136,19 @@ public class EventServiceImpl implements EventService {
                 .map(eventMapper::eventToEventFullDto)
                 .map(this::completeWithRequests)
                 .map(this::completeWithViews)
-                .map(eventDto -> (EventFullDto)eventDto)
-                .sorted(getComparator(paramsDto.getSort()))
+                .map(eventDto -> (EventFullDto) eventDto)
+                .sorted(getComparator(params.getSort()).reversed())
                 .collect(Collectors.toList());
         return events;
+    }
+
+    private static void checkAllRequestsPending(List<ParticipationRequest> requests) {
+        Optional<ParticipationRequest> notPending = requests.stream()
+                .filter(request -> request.getStatus() != RequestStatus.PENDING)
+                .findAny();
+        if (notPending.isPresent()) {
+            throw new EWMConflictException("Статус запроса изменить невозможно");
+        }
     }
 
     private EventDto completeWithRequests(EventDto eventDto) {
@@ -156,6 +166,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto update(UpdateEventAdminRequest request, Long eventId) {
         Event event = getEventIfExists(eventId);
         checkEventDateIsAfterNow(event.getEventDate(), 1);
@@ -185,31 +196,34 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventShortDto> getByPublic(EventFilterParamsDto paramsDto, HttpServletRequest request) {
         EventFilterParams params = convertInputParams(paramsDto);
-        statService.addHit(request);
-        return eventRepository.publicEventsSearch(params)
+        List<EventShortDto> events = eventRepository.publicEventsSearch(params)
                 .stream()
                 .map(eventMapper::eventToEventShortDto)
                 .peek(this::completeWithRequests)
                 .peek(this::completeWithViews)
-                .sorted(getComparator(paramsDto.getSort()))
+                .sorted(getComparator(params.getSort()).reversed())
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public EventFullDto get(Long eventId) {
-        Event event = getEventIfExists(eventId);
-        checkEventIsPublished(event);
-        return completeEventFullDto(event);
+        statService.addHit(request);
+        return events;
     }
 
     private Comparator<EventDto> getComparator(EventSort sortType) {
-        if (sortType == null) {
-            return EventDto.EVENT_DATE_COMPARATOR;
-        }
-        if (sortType == EventSort.VIEWS) {
-            return EventDto.VIEWS_COMPARATOR;
+        if (sortType != null) {
+            if (sortType == EventSort.VIEWS) {
+                return EventDto.VIEWS_COMPARATOR;
+            }
         }
         return EventDto.EVENT_DATE_COMPARATOR;
+
+    }
+
+    @Override
+    public EventFullDto get(Long eventId, HttpServletRequest request) {
+        Event event = getEventIfExists(eventId);
+        checkEventIsPublished(event);
+        EventFullDto eventFullDto = completeEventFullDto(event);
+        statService.addHit(request);
+        return eventFullDto;
     }
 
     private void checkEventIsPublished(Event event) {
@@ -234,7 +248,7 @@ public class EventServiceImpl implements EventService {
             if (Objects.nonNull(endString)) {
                 end = EWMTimeDecoderUrl.urlStringToLocalDateTime(endString);
                 if (end.isBefore(start)) {
-                    throw new EWMConflictException("Некорретный запрос.");
+                    throw new EWMIncorrectParamsException("Некорретный запрос.");
                 }
             }
             params = EventFilterParams.builder()
@@ -258,7 +272,7 @@ public class EventServiceImpl implements EventService {
 
     private void publishEvent(UpdateEventAdminRequest request, Event event) {
         if(event.getState() != EventState.PENDING) {
-            throw new EWMUpdateForbiddenException("Событие не может быть опубликовано.");
+            throw new EWMConflictException("Событие не может быть опубликовано.");
         } else {
             updateEventFields(request, event);
             event.setState(EventState.PUBLISHED);
@@ -270,54 +284,43 @@ public class EventServiceImpl implements EventService {
         if (event.getState() == EventState.PENDING) {
             event.setState(EventState.REJECTED);
         } else {
-            throw new EWMUpdateForbiddenException("Событие не может быть отклонено.");
+            throw new EWMConflictException("Событие не может быть отклонено.");
         }
     }
 
     private void confirmRequests(List<ParticipationRequest> requestsToUpdate, EventRequestStatusUpdateResult result, Event event) {
         long confirmed = requestRepository.countByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED);
         long limit = event.getParticipantLimit();
-        boolean limitExceeded = false;
+
         for (ParticipationRequest request : requestsToUpdate) {
-            checkPendingRequestStatus(request);
             if (confirmed == limit) {
-                addToRejectedAndSave(request, result);
-                limitExceeded = true;
-            } else {
-                addToConfirmedAndSave(request, result);
-                confirmed++;
+                int start = requestsToUpdate.indexOf(request);
+                int end = requestsToUpdate.size();
+                rejectRequests(requestsToUpdate.subList(start, end), result);
+                throw new EWMConflictException("Достигнут лимит участников в событии.");
             }
-        }
-        if (limitExceeded) {
-            throw new EWMRequestConfirmForbiddenException("Достигнут лимит участников в событии.");
-        }
-    }
-
-    private void checkPendingRequestStatus(ParticipationRequest request) {
-        if (request.getStatus() != RequestStatus.PENDING) {
-            throw new EWMRequestConfirmForbiddenException("Ошибка статуса запроса.");
+            confirmRequests(List.of(request), result);
+            confirmed++;
         }
     }
 
-    private void rejectRequests(List<ParticipationRequest> requestsToUpdate, EventRequestStatusUpdateResult result, Event event) {
-        for (ParticipationRequest request : requestsToUpdate) {
-            checkPendingRequestStatus(request);
-            addToRejectedAndSave(request, result);
-        }
+    private void rejectRequests(List<ParticipationRequest> requestsToUpdate, EventRequestStatusUpdateResult result) {
+        requestsToUpdate.forEach(r -> r.setStatus(RequestStatus.REJECTED));
+        List<ParticipationRequest> rejected = requestRepository.saveAll(requestsToUpdate);
+        result.setRejectedRequests(mapToRequestDtoList(rejected));
     }
 
-    private void addToRejectedAndSave(ParticipationRequest request, EventRequestStatusUpdateResult result) {
-        result.getRejectedRequests()
-                .add(participationRequestMapper.participationRequestToParticipationRequestDto(request));
-        request.setStatus(RequestStatus.REJECTED);
-        requestRepository.save(request);
+    private List<ParticipationRequestDto> mapToRequestDtoList(List<ParticipationRequest> requests) {
+//        return requests.stream()
+//                .map(participationRequestMapper::toParticipationRequestDto)
+//                .collect(Collectors.toList());
+        return participationRequestMapper.toParticipationRequestDtoList(requests);
     }
 
-    private void addToConfirmedAndSave(ParticipationRequest request, EventRequestStatusUpdateResult result) {
-        result.getConfirmedRequests()
-                .add(participationRequestMapper.participationRequestToParticipationRequestDto(request));
-        request.setStatus(RequestStatus.CONFIRMED);
-        requestRepository.save(request);
+    private void confirmRequests(List<ParticipationRequest> requestsToUpdate, EventRequestStatusUpdateResult result) {
+        requestsToUpdate.forEach(r -> r.setStatus(RequestStatus.CONFIRMED));
+        List<ParticipationRequest> confirmed = requestRepository.saveAll(requestsToUpdate);
+        result.setConfirmedRequests(mapToRequestDtoList(confirmed));
     }
 
     private User getUserIfExists(Long userId) {
@@ -337,7 +340,7 @@ public class EventServiceImpl implements EventService {
 
     private Location getLocation(LocationDto locationDto) {
         Location location = locationMapper.locationDtoToLocation(locationDto);
-        return locationRepository.getByLatAndLot(location.getLat(), location.getLot())
+        return locationRepository.getByLatAndLon(location.getLat(), location.getLon())
                 .orElse(locationRepository.save(location));
     }
 
@@ -365,10 +368,7 @@ public class EventServiceImpl implements EventService {
     private EventFullDto completeEventFullDto(Event event) {
         EventFullDto eventFullDto = eventMapper.eventToEventFullDto(event);
         Long confirmedRequests = getConfirmedRequests(event.getId());
-        boolean published = event.getState() == EventState.PUBLISHED;
-        if (published) {
-            completeWithViews(eventFullDto);
-        }
+        completeWithViews(eventFullDto);
         eventFullDto.setConfirmedRequests(confirmedRequests);
         return eventFullDto;
     }
@@ -440,7 +440,7 @@ public class EventServiceImpl implements EventService {
         if (Objects.nonNull(eventDate)) {
             LocalDateTime updatedEventDate = stringToLocalDateTime(eventDate);
             if(Objects.nonNull(updatedEventDate)) {
-                checkEventDateIsAfterNow(updatedEventDate, 2);
+                checkEventDateIsAfterNow(updatedEventDate, 1);
                 event.setEventDate(updatedEventDate);
             }
         }
@@ -449,7 +449,7 @@ public class EventServiceImpl implements EventService {
     private void checkEventDateIsAfterNow(LocalDateTime dateTime, Integer gapFromNowInHours) {
         LocalDateTime minEventDateTime = LocalDateTime.now().plusHours(gapFromNowInHours);
         if (dateTime.isBefore(minEventDateTime)) {
-            throw new EWMConflictException("Некорректная дата события.");
+            throw new EWMIncorrectParamsException("Некорректная дата события.");
         }
     }
 
@@ -473,11 +473,8 @@ public class EventServiceImpl implements EventService {
     }
 
     private void checkEventStateInList(Event event, List<EventState> states) {
-        for (EventState state : states) {
-            if (event.getState() == state) {
-                return;
-            }
+        if (!states.contains(event.getState())) {
+            throw new EWMConflictException("Некорректный статус события.");
         }
-        throw new EWMConflictException("Некорректный статус события.");
     }
 }
