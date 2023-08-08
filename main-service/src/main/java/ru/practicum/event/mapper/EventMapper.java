@@ -44,6 +44,5 @@ public interface EventMapper {
     @Mapping(target = "rangeEnd", expression = "java(end)")
     EventFilterParams toEventFilterParams(EventFilterParamsDto filterDto, LocalDateTime start, LocalDateTime end);
 
-    List<EventFullDto> toEventFullDtoList(List<EventDto> eventDtos);
     List<EventShortDto> toEventShortDtoList(List<EventDto> eventDtos);
 }

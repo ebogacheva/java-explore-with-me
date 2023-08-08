@@ -15,7 +15,7 @@ import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ExploreConflictException;
-import ru.practicum.exception.EWMElementNotFoundException;
+import ru.practicum.exception.ExploreNotFoundException;
 
 import static ru.practicum.utils.ExploreConstantsAndStaticMethods.*;
 
@@ -75,7 +75,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     private Compilation getCompilationIfExist(Long comId) {
         return compilationRepository.findById(comId)
-                .orElseThrow(() -> new EWMElementNotFoundException(COMPILATION_NOT_FOUND));
+                .orElseThrow(() -> new ExploreNotFoundException(COMPILATION_NOT_FOUND));
     }
 
     private List<Event> fetchEvents(List<Long> eventIds) {
@@ -89,7 +89,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     private void checkAllEventsFound(List<Event> events, List<Long> eventIds) {
         if (events.size() < eventIds.size()) { // TODO: Есть ощущение, что это не нужно
-            throw new EWMElementNotFoundException(EVENTS_FROM_COMPILATION_NOT_FOUND);
+            throw new ExploreNotFoundException(EVENTS_FROM_COMPILATION_NOT_FOUND);
         }
     }
 
@@ -118,11 +118,11 @@ public class CompilationServiceImpl implements CompilationService {
 
     private void updateTitle(Compilation comp, String newTitle) {
         if (Objects.nonNull(newTitle)) {
-            checkTitleNotUnique(newTitle, comp.getTitle(), comp.getId());
+            checkTitleNotUnique(newTitle, comp.getId());
         }
     }
 
-    private void checkTitleNotUnique(String newTitle, String title, Long compId) {
+    private void checkTitleNotUnique(String newTitle, Long compId) {
         Optional<Compilation> titleNotUnique = compilationRepository.findFirst1ByTitleAndIdNotIn(newTitle, List.of(compId));
         titleNotUnique.ifPresent((cmp) -> {
             throw new ExploreConflictException(COMPILATION_TITLE_ALREADY_EXIST);

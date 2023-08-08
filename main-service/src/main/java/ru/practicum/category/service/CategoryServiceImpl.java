@@ -2,7 +2,6 @@ package ru.practicum.category.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.dto.CategoryDto;
@@ -13,7 +12,7 @@ import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ExploreConflictException;
-import ru.practicum.exception.EWMElementNotFoundException;
+import ru.practicum.exception.ExploreNotFoundException;
 
 import java.util.List;
 import java.util.Objects;
@@ -57,8 +56,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> get(Integer from, Integer size) {
-        Pageable pageable = pageRequestOf(from, size);
-        Page<Category> catPage = categoryRepository.findAll(pageable);
+        Page<Category> catPage = categoryRepository.findAll(pageRequestOf(from, size));
         return catPage.map(catMapper::toCategoryDto).getContent();
     }
 
@@ -89,7 +87,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private Category getCategoryIfExists(Long catId) {
         return categoryRepository.findById(catId)
-                .orElseThrow(() -> new EWMElementNotFoundException(CATEGORY_NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ExploreNotFoundException(CATEGORY_NOT_FOUND_EXCEPTION));
     }
 
     private void updateCategoryByDto(Category category, CategoryDto categoryDto) {

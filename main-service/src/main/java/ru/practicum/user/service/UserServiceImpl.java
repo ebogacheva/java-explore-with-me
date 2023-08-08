@@ -6,7 +6,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.ExploreConflictException;
-import ru.practicum.exception.EWMElementNotFoundException;
+import ru.practicum.exception.ExploreNotFoundException;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.mapper.UserMapper;
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
     private User getUserIfExists(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new EWMElementNotFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new ExploreNotFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 
     private List<UserDto> getUsersByIds(List<Long> ids) {

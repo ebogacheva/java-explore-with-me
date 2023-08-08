@@ -17,8 +17,8 @@ import ru.practicum.enums.EventStateAction;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.location.LocationRepository;
 import ru.practicum.event.service.statistics.StatService;
-import ru.practicum.exception.EWMElementNotFoundException;
-import ru.practicum.exception.EWMIncorrectParamsException;
+import ru.practicum.exception.ExploreNotFoundException;
+import ru.practicum.exception.ExploreIncorrectParamsException;
 import ru.practicum.exception.ExploreConflictException;
 import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.request.dto.EventRequestStatusUpdateResult;
@@ -247,7 +247,7 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
     private void checkEventIsPublished(EventState state) {
         boolean published = (state == EventState.PUBLISHED);
         if(!published) {
-            throw new EWMElementNotFoundException(EVENT_NOT_FOUND_EXCEPTION);
+            throw new ExploreNotFoundException(EVENT_NOT_FOUND_EXCEPTION);
         }
     }
 
@@ -259,7 +259,7 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
             LocalDateTime start = getFromStringOrSetDefault(startString, LocalDateTime.now());
             LocalDateTime end = getFromStringOrSetDefault(endString, null);
             if (end != null && end.isBefore(start)) {
-                throw new EWMIncorrectParamsException(EVENT_INCORRECT_TIME_RANGE_FILTER);
+                throw new ExploreIncorrectParamsException(EVENT_INCORRECT_TIME_RANGE_FILTER);
             }
             params = eventMapper.toEventFilterParams(paramsDto,start, end);
         } catch (UnsupportedEncodingException e) {
@@ -321,17 +321,17 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
 
     private User getUserIfExists(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new EWMElementNotFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new ExploreNotFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 
     private Event getEventIfExists(Long eventId) {
         return eventRepository.findById(eventId)
-                .orElseThrow(() -> new EWMElementNotFoundException(EVENT_NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ExploreNotFoundException(EVENT_NOT_FOUND_EXCEPTION));
     }
 
     private Category getCategoryIfExists(Long catId) {
         return categoryRepository.findById(catId)
-                .orElseThrow(() -> new EWMElementNotFoundException(CATEGORY_NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ExploreNotFoundException(CATEGORY_NOT_FOUND_EXCEPTION));
     }
 
     private Location getLocation(LocationDto locationDto) {
@@ -352,7 +352,7 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
     private Event completeNewEvent(NewEventDto newEventDto, Long userId) {
         Event event = eventMapper.toEvent(newEventDto);
         User user = getUserIfExists(userId);
-        Category category = getCategoryIfExists(newEventDto.getCategory()); // TODO make joins with corresponding tables ?
+        Category category = getCategoryIfExists(newEventDto.getCategory());
         Location location = getLocation(newEventDto.getLocation());
         event.setInitiator(user);
         event.setCategory(category);
@@ -397,7 +397,7 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
     }
 
     private void updateEventStateAction(Event event, EventStateAction action) {
-        if (Objects.nonNull(action)) {;
+        if (Objects.nonNull(action)) {
             if (action == EventStateAction.SEND_TO_REVIEW) {
                 event.setState(EventState.PENDING);
             } else if (action == EventStateAction.CANCEL_REVIEW) {

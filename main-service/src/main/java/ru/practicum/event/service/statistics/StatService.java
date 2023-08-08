@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.event.model.Event;
 import ru.practicum.enums.EventState;
 import ru.practicum.event.repository.EventRepository;
-import ru.practicum.exception.EWMElementNotFoundException;
+import ru.practicum.exception.ExploreNotFoundException;
 import ru.practicum.stats.StatsClient;
 import ru.practicum.stats_dto.ViewStats;
 
@@ -52,7 +52,7 @@ public class StatService {
 
     private Event getEventIfExists(Long eventId) {
         return eventRepository.findById(eventId)
-                .orElseThrow(() -> new EWMElementNotFoundException(EVENT_NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ExploreNotFoundException(EVENT_NOT_FOUND_EXCEPTION));
     }
 
     private Long extractViews(ResponseEntity<Object> response) {

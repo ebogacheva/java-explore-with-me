@@ -33,7 +33,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handle(final EWMElementNotFoundException e) {
+    public ErrorResponse handle(final ExploreNotFoundException e) {
         return new ErrorResponse("Not found error: ", e.getMessage());
     }
 
@@ -46,13 +46,13 @@ public class ErrorHandler {
     @ExceptionHandler({ConstraintViolationException.class,
                         MethodArgumentNotValidException.class,
                         MissingPathVariableException.class,
-                        EWMIncorrectParamsException.class})
+                        ExploreIncorrectParamsException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handle(Exception e) throws Exception {
         if (e instanceof ConstraintViolationException ||
                 e instanceof  MethodArgumentNotValidException ||
                 e instanceof MissingPathVariableException ||
-                e instanceof EWMIncorrectParamsException) {
+                e instanceof ExploreIncorrectParamsException) {
             return new ErrorResponse("Validation error: ", e.getMessage());
         }
         throw e;

@@ -2,7 +2,7 @@ package ru.practicum.utils;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.exception.EWMIncorrectParamsException;
+import ru.practicum.exception.ExploreIncorrectParamsException;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +20,6 @@ public class ExploreConstantsAndStaticMethods {
 
         /*----------Event String Utils------------*/
         public static final String EVENT_NOT_FOUND_EXCEPTION = "Event not found.";
-        public static final String EVENT_STATE_ACTION_NOT_FOUND_EXCEPTION = "Event-state-action not found.";
         public static final String INVALID_EVENT_DATE = "Invalid event date-time.";
         public static final String INVALID_EVENT_STATUS = "Invalid event status.";
         public static final String EVENT_PARTICIPANTS_LIMIT_IS_REACHED = "Participants limit is reached.";
@@ -30,13 +29,15 @@ public class ExploreConstantsAndStaticMethods {
         /*----------Compilation String Utils------------*/
         public static final String EVENTS_FROM_COMPILATION_NOT_FOUND = "Some events from the compilation not found.";
         public static final String COMPILATION_NOT_FOUND = "Compilation not found.";
-        public static final String COMPILATION_TITLE_ALREADY_EXIST = "Compilation title already exists and could not be used";
+        public static final String COMPILATION_TITLE_ALREADY_EXIST =
+                "Compilation title already exists and could not be used";
 
         /*----------Request String Utils------------*/
         public static final String REQUEST_ALREADY_EXIST = "Participation request already exists.";
         public static final String EVENT_REQUEST_STATUS_CHANGE_FORBIDDEN = "Impossible to change request status.";
         public static final String PARTICIPATION_REQUEST_NOT_FOUND = "Participation request not found.";
-        public static final String OWNER_NOT_ALLOWED_TO_ADD_REQUEST = "Event owner not allowed to create request to his own event.";
+        public static final String OWNER_NOT_ALLOWED_TO_ADD_REQUEST =
+                "Event owner not allowed to create request to his own event.";
 
         public static Pageable pageRequestOf(int from, int size) {
                 int page = from / size;
@@ -46,7 +47,7 @@ public class ExploreConstantsAndStaticMethods {
         public static void checkDateTimeIsAfterNowWithGap(LocalDateTime value, Integer gapFromNowInHours) {
                 LocalDateTime minValidDateTime = LocalDateTime.now().plusHours(gapFromNowInHours);
                 if (value.isBefore(minValidDateTime)) {
-                        throw new EWMIncorrectParamsException(INVALID_EVENT_DATE);
+                        throw new ExploreIncorrectParamsException(INVALID_EVENT_DATE);
                 }
         }
 

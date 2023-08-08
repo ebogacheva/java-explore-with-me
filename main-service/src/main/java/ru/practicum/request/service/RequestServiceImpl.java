@@ -7,7 +7,7 @@ import ru.practicum.event.model.Event;
 import ru.practicum.enums.EventState;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ExploreConflictException;
-import ru.practicum.exception.EWMElementNotFoundException;
+import ru.practicum.exception.ExploreNotFoundException;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.mapper.ParticipationRequestMapper;
 import ru.practicum.request.model.ParticipationRequest;
@@ -75,12 +75,12 @@ public class RequestServiceImpl implements RequestService {
 
     private User getUserIfExists(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new EWMElementNotFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE));
+                .orElseThrow(() -> new ExploreNotFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 
     private ParticipationRequest getRequestIfExists(Long requestId) {
         return requestRepository.findById(requestId)
-                .orElseThrow(() -> new EWMElementNotFoundException(PARTICIPATION_REQUEST_NOT_FOUND));
+                .orElseThrow(() -> new ExploreNotFoundException(PARTICIPATION_REQUEST_NOT_FOUND));
     }
 
     private void checkIfRequestExists(Long userId, Long eventId) {
@@ -91,7 +91,7 @@ public class RequestServiceImpl implements RequestService {
 
     private Event getEventIfExists(Long eventId) {
         return eventRepository.findById(eventId)
-                .orElseThrow(() -> new EWMElementNotFoundException(EVENT_NOT_FOUND_EXCEPTION));
+                .orElseThrow(() -> new ExploreNotFoundException(EVENT_NOT_FOUND_EXCEPTION));
     }
 
     private static void checkUserIsInitiator(Long userId, Event event) {
