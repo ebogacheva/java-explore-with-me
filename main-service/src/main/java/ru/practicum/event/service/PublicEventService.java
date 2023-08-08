@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface PublicEventService {
 
-    List<EventShortDto> getByPublic(EventFilterParamsDto params, HttpServletRequest request);
+    List<EventShortDto> getEventsByPublic(EventFilterParamsDto params, HttpServletRequest request);
 
-    EventFullDto get(Long eventId, HttpServletRequest request);
+    EventFullDto getEventsByPublic(Long eventId, HttpServletRequest request);
 }
 

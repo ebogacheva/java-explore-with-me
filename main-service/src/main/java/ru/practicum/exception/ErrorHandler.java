@@ -38,21 +38,9 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse handle(final EWMUpdateForbiddenException e) {
-        return new ErrorResponse("Update forbidden error: ", e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handle(final EWMRequestConfirmForbiddenException e) {
-        return new ErrorResponse("Update request status error: ", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handle(final ExploreConflictException e) {
-        return new ErrorResponse("Update request status error: ", e.getMessage());
+        return new ErrorResponse("Conflict error: ", e.getMessage());
     }
 
     @ExceptionHandler({ConstraintViolationException.class,

@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface AdminEventService {
 
-    List<EventFullDto> getByAdmin(EventFilterParamsDto params);
+    List<EventFullDto> getEventsByAdmin(EventFilterParamsDto params);
 
-    EventFullDto update(UpdateEventAdminRequest request, Long eventId);
+    EventFullDto updateEventByAdmin(UpdateEventAdminRequest request, Long eventId);
 }
 

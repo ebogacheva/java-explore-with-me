@@ -3,6 +3,7 @@ package ru.practicum.event.dto;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.practicum.event.location.LocationDto;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;

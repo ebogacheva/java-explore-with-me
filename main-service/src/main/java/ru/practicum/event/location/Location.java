@@ -1,8 +1,9 @@
-package ru.practicum.event.model;
+package ru.practicum.event.location;
 
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
@@ -16,9 +17,11 @@ public class Location {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "lat", nullable = false)
+    @NotNull
+    @Column(name = "lat")
     private Double lat;
 
+    @NotNull
     @Column(name = "lon", nullable = false)
     private Double lon;
 }

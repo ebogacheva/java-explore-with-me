@@ -2,6 +2,7 @@ package ru.practicum.event.dto;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import ru.practicum.event.location.LocationDto;
 
 @Getter
 @Setter

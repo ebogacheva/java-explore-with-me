@@ -3,11 +3,12 @@ package ru.practicum.event.model;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.category.model.Category;
+import ru.practicum.event.location.Location;
+import ru.practicum.enums.EventState;
 import ru.practicum.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 
 @Getter
 @Setter
@@ -65,6 +66,4 @@ public class Event {
 
     @Column(name = "title")
     private String title;
-
-
 }

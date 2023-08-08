@@ -1,4 +1,4 @@
-package ru.practicum.event.service;
+package ru.practicum.event.service.statistics;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.EventState;
+import ru.practicum.enums.EventState;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.EWMElementNotFoundException;
 import ru.practicum.stats.StatsClient;
@@ -35,7 +35,6 @@ public class StatService {
         String uri = request.getRequestURI();
         String ip = request.getRemoteAddr();
         LocalDateTime timestamp = LocalDateTime.now();
-
         statsClient.addHit(app, uri, ip, timestamp);
     }
 

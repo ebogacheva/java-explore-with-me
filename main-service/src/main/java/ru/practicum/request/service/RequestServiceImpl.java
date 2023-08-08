@@ -4,23 +4,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.EventState;
+import ru.practicum.enums.EventState;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ExploreConflictException;
 import ru.practicum.exception.EWMElementNotFoundException;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.mapper.ParticipationRequestMapper;
 import ru.practicum.request.model.ParticipationRequest;
-import ru.practicum.request.model.RequestStatus;
+import ru.practicum.enums.RequestStatus;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static ru.practicum.utils.ExploreConstantsAndStaticMethods.EVENT_NOT_FOUND_EXCEPTION;
-import static ru.practicum.utils.ExploreConstantsAndStaticMethods.USER_NOT_FOUND_EXCEPTION_MESSAGE;
+import static ru.practicum.utils.ExploreConstantsAndStaticMethods.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,16 +28,14 @@ public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
-    private final ParticipationRequestMapper mapper;
+    private final ParticipationRequestMapper requestMapper;
 
 
     @Override
     public List<ParticipationRequestDto> get(Long userId) {
         getUserIfExists(userId);
         List<ParticipationRequest> requests = requestRepository.findByRequesterId(userId);
-        return requests.stream()
-                .map(mapper::toParticipationRequestDto)
-                .collect(Collectors.toList());
+        return requestMapper.toRequestDtoList(requests);
     }
 
     @Override
@@ -53,7 +49,7 @@ public class RequestServiceImpl implements RequestService {
             checkParticipantsLimitIsReached(event);
         }
         ParticipationRequest request = completeNewRequest(userId, event);
-        return mapper.toParticipationRequestDto(requestRepository.save(request));
+        return requestMapper.toRequestDto(requestRepository.save(request));
     }
 
     @Override
@@ -62,7 +58,7 @@ public class RequestServiceImpl implements RequestService {
         getUserIfExists(userId);
         ParticipationRequest request = getRequestIfExists(requestId);
         request.setStatus(RequestStatus.CANCELED);
-        return mapper.toParticipationRequestDto(requestRepository.save(request));
+        return requestMapper.toRequestDto(requestRepository.save(request));
     }
 
     private ParticipationRequest completeNewRequest(Long userId, Event event) {
@@ -84,12 +80,12 @@ public class RequestServiceImpl implements RequestService {
 
     private ParticipationRequest getRequestIfExists(Long requestId) {
         return requestRepository.findById(requestId)
-                .orElseThrow(() -> new EWMElementNotFoundException("Такого запроса на участие не существет."));
+                .orElseThrow(() -> new EWMElementNotFoundException(PARTICIPATION_REQUEST_NOT_FOUND));
     }
 
     private void checkIfRequestExists(Long userId, Long eventId) {
         if (requestRepository.findFirst1ByEventIdAndRequesterId(eventId, userId).isPresent()) {
-            throw new ExploreConflictException("Такой запрос на участие уже существует.");
+            throw new ExploreConflictException(REQUEST_ALREADY_EXIST);
         }
     }
 
@@ -101,13 +97,13 @@ public class RequestServiceImpl implements RequestService {
     private static void checkUserIsInitiator(Long userId, Event event) {
         Long initiatorId = event.getInitiator().getId();
         if(userId.equals(initiatorId)) {
-            throw new ExploreConflictException("Пользователь не может добавить запрос на участие в своем событии.");
+            throw new ExploreConflictException(OWNER_NOT_ALLOWED_TO_ADD_REQUEST);
         }
     }
 
     private static void checkEventIsPublished(Event event) {
         if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new ExploreConflictException("Пользователь не может добавить запрос на участие в неопубликованном событии.");
+            throw new ExploreConflictException(INVALID_EVENT_STATUS);
         }
     }
 
@@ -115,7 +111,7 @@ public class RequestServiceImpl implements RequestService {
         Long participants = requestRepository.countByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED);
         Long limit = event.getParticipantLimit();
         if (participants >= limit) {
-            throw new ExploreConflictException("Достигнут лимит участников в событии.");
+            throw new ExploreConflictException(EVENT_PARTICIPANTS_LIMIT_IS_REACHED);
         }
     }
 }

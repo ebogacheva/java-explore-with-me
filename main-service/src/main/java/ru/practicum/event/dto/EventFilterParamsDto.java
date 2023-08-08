@@ -1,13 +1,16 @@
 package ru.practicum.event.dto;
 
 import lombok.*;
-import ru.practicum.event.model.EventSort;
-import ru.practicum.event.model.EventState;
+import ru.practicum.enums.EventSort;
+import ru.practicum.enums.EventState;
 
 import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class EventFilterParamsDto {
 
     private List<Long> ids = List.of();

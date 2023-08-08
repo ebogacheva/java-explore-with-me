@@ -1,11 +1,9 @@
 package ru.practicum.event.repository;
 
-
-import org.mapstruct.ap.internal.util.Strings;
 import org.springframework.stereotype.Repository;
 import ru.practicum.event.dto.EventFilterParams;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.EventState;
+import ru.practicum.enums.EventState;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

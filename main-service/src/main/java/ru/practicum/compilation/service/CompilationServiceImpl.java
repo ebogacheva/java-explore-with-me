@@ -94,7 +94,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     private List<EventShortDto> getEventShortDtos(List<Event> events) {
-        return events.stream().map(eventMapper::eventToEventShortDto).collect(Collectors.toList());
+        return events.stream().map(eventMapper::toEventShortDto).collect(Collectors.toList());
     }
 
     private void updateCompilation(Compilation comp, UpdateCompilationRequest request) {

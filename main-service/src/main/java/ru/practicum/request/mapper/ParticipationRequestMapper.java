@@ -12,8 +12,8 @@ public interface ParticipationRequestMapper {
     @Mapping(target = "event", expression = "java(request.getEvent().getId())")
     @Mapping(target = "created", expression = "java(ru.practicum.utils.ExploreDateTimeFormatter.localDateTimeToString(request.getCreated()))")
     @Mapping(target = "requester", expression = "java(request.getRequester().getId())")
-    @Mapping(target = "status", expression = "java(request.getStatus().getName())")
-    ParticipationRequestDto toParticipationRequestDto(ParticipationRequest request);
+    @Mapping(target = "status", expression = "java(request.getStatus().name())")
+    ParticipationRequestDto toRequestDto(ParticipationRequest request);
 
-    List<ParticipationRequestDto> toParticipationRequestDtoList(List<ParticipationRequest> requests);
+    List<ParticipationRequestDto> toRequestDtoList(List<ParticipationRequest> requests);
 }
