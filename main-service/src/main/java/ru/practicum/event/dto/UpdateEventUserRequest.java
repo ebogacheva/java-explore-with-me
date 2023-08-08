@@ -1,7 +1,6 @@
 package ru.practicum.event.dto;
 
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter

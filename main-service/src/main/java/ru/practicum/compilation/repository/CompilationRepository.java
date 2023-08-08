@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface CompilationRepository extends JpaRepository<Compilation, Long> {
 
     Page<Compilation> findAllByPinned(Boolean pinned, Pageable pageable);
+
     Optional<Compilation> findFirst1ByTitleAndIdNotIn(String title, List<Long> ids);
 }

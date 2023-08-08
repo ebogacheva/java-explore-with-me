@@ -11,6 +11,7 @@ public class ExploreDateTimeFormatter {
         return Objects.isNull(dateTime) ?
                 null : dateTime.format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
     }
+
     public static LocalDateTime stringToLocalDateTime(String dateTime) {
         return Objects.isNull(dateTime) ?
                 null : LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));

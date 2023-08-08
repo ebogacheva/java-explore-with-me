@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class CustomEventRepositoryImpl implements CustomEventRepository{
+public class CustomEventRepositoryImpl implements CustomEventRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -92,20 +92,21 @@ public class CustomEventRepositoryImpl implements CustomEventRepository{
             cb.and(criteria, eventRoot.get("state").in(states));
         }
     }
+
     private void addCategoryFilter(Predicate criteria, CriteriaBuilder cb, Root<Event> eventRoot, List<Long> categories) {
-        if(!categories.isEmpty()) {
+        if (!categories.isEmpty()) {
             cb.and(criteria, eventRoot.get("category").in(categories));
         }
     }
 
     private void addRangeStartFilter(Predicate criteria, CriteriaBuilder cb, Root<Event> eventRoot, LocalDateTime rangeStart) {
-        if(rangeStart != null) {
+        if (rangeStart != null) {
             cb.and(criteria, cb.greaterThanOrEqualTo(eventRoot.get("eventDate"),  rangeStart));
         }
     }
 
     private void addRangeEndFilter(Predicate criteria, CriteriaBuilder cb, Root<Event> eventRoot, LocalDateTime rangeEnd) {
-        if(rangeEnd != null) {
+        if (rangeEnd != null) {
             cb.and(criteria, cb.lessThanOrEqualTo(eventRoot.get("eventDate"),  rangeEnd));
         }
     }

@@ -16,7 +16,7 @@ import static ru.practicum.utils.ExploreDateTimeFormatter.stringToLocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class EventDto implements Comparable<EventDto>{
+public class EventDto implements Comparable<EventDto> {
 
     private Long id;
     private String annotation;

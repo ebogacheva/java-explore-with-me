@@ -96,7 +96,7 @@ public class RequestServiceImpl implements RequestService {
 
     private static void checkUserIsInitiator(Long userId, Event event) {
         Long initiatorId = event.getInitiator().getId();
-        if(userId.equals(initiatorId)) {
+        if (userId.equals(initiatorId)) {
             throw new ExploreConflictException(OWNER_NOT_ALLOWED_TO_ADD_REQUEST);
         }
     }

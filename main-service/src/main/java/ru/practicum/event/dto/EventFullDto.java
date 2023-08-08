@@ -8,7 +8,7 @@ import ru.practicum.event.location.LocationDto;
 @Setter
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class EventFullDto extends EventDto{
+public class EventFullDto extends EventDto {
 
     private String createdOn;
     private String description;

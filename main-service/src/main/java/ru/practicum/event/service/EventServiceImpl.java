@@ -246,7 +246,7 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
 
     private void checkEventIsPublished(EventState state) {
         boolean published = (state == EventState.PUBLISHED);
-        if(!published) {
+        if (!published) {
             throw new ExploreNotFoundException(EVENT_NOT_FOUND_EXCEPTION);
         }
     }
@@ -434,7 +434,7 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
     private void updateEventDate(Event event, String eventDate) {
         if (Objects.nonNull(eventDate)) {
             LocalDateTime updatedEventDate = stringToLocalDateTime(eventDate);
-            if(Objects.nonNull(updatedEventDate)) {
+            if (Objects.nonNull(updatedEventDate)) {
                 checkDateTimeIsAfterNowWithGap(updatedEventDate, 1);
                 event.setEventDate(updatedEventDate);
             }
@@ -455,7 +455,7 @@ public class EventServiceImpl implements AdminEventService, PublicEventService, 
     }
 
     private void updateEventAnnotation(Event event, String annotation) {
-        if(Objects.nonNull(annotation)) {
+        if (Objects.nonNull(annotation)) {
             event.setAnnotation(annotation);
         }
     }
