@@ -10,7 +10,6 @@ import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.mapper.CompilationMapper;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
-import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
@@ -23,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,8 +38,7 @@ public class CompilationServiceImpl implements CompilationService {
         List<Event> events = fetchEvents(newCompDto.getEvents());
         Compilation newComp = compilationMapper.toCompilation(newCompDto, events);
         Compilation savedComp = compilationRepository.save(newComp);
-        List<EventShortDto> dtos = getEventShortDtos(events); // TODO: обязательно попробовать что работает без передачи листа ДТО
-        return compilationMapper.toCompilationDto(savedComp, dtos);
+        return compilationMapper.toCompilationDto(savedComp);
     }
 
     @Override
@@ -50,8 +47,7 @@ public class CompilationServiceImpl implements CompilationService {
         Compilation compilation = getCompilationIfExist(compId);
         updateCompilation(compilation, request);
         Compilation updatedComp = compilationRepository.save(compilation);
-        List<EventShortDto> dtos = getEventShortDtos(updatedComp.getEvents());
-        return compilationMapper.toCompilationDto(updatedComp, dtos);
+        return compilationMapper.toCompilationDto(updatedComp);
     }
 
     @Override
@@ -84,19 +80,7 @@ public class CompilationServiceImpl implements CompilationService {
         if (eventIds.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Event> events = eventRepository.findAllByIdIn(eventIds);
-        ///checkAllEventsFound(events, eventIds);
-        return events;
-    }
-
-//    private void checkAllEventsFound(List<Event> events, List<Long> eventIds) {
-//        if (events.size() < eventIds.size()) { // TODO: Есть ощущение, что это не нужно
-//            throw new ExploreNotFoundException(EVENTS_FROM_COMPILATION_NOT_FOUND);
-//        }
-//    }
-
-    private List<EventShortDto> getEventShortDtos(List<Event> events) {
-        return events.stream().map(eventMapper::toEventShortDto).collect(Collectors.toList());
+        return eventRepository.findAllByIdIn(eventIds);
     }
 
     private void updateCompilation(Compilation comp, UpdateCompilationRequest request) {

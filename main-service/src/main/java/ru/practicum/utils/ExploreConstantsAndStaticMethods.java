@@ -29,7 +29,6 @@ public class ExploreConstantsAndStaticMethods {
         public static final String EVENT_INCORRECT_TIME_RANGE_FILTER = "Invalid time-range filter params.";
 
         /*----------Compilation String Utils------------*/
-        public static final String EVENTS_FROM_COMPILATION_NOT_FOUND = "Some events from the compilation not found.";
         public static final String COMPILATION_NOT_FOUND = "Compilation not found.";
         public static final String COMPILATION_TITLE_ALREADY_EXIST =
                 "Compilation title already exists and could not be used";

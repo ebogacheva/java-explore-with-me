@@ -5,7 +5,6 @@ import org.mapstruct.Mapping;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.model.Compilation;
-import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 
@@ -17,9 +16,6 @@ public interface CompilationMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "events", expression = "java(events)")
     Compilation toCompilation(NewCompilationDto newCompDto, List<Event> events);
-
-    @Mapping(target = "events", expression = "java(eventsShortDto)")
-    CompilationDto toCompilationDto(Compilation compilation, List<EventShortDto> eventsShortDto);
 
     CompilationDto toCompilationDto(Compilation compilation);
 }
