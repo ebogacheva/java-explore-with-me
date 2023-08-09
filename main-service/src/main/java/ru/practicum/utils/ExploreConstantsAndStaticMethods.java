@@ -1,11 +1,13 @@
 package ru.practicum.utils;
 
+import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.exception.ExploreIncorrectParamsException;
 
 import java.time.LocalDateTime;
 
+@UtilityClass
 public class ExploreConstantsAndStaticMethods {
 
         /*----------Category String Utils------------*/

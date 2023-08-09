@@ -55,12 +55,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CategoryDto> get(Integer from, Integer size) {
         Page<Category> catPage = categoryRepository.findAll(pageRequestOf(from, size));
         return catPage.map(catMapper::toCategoryDto).getContent();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CategoryDto get(Long catId) {
         Category category = getCategoryIfExists(catId);
         return catMapper.toCategoryDto(category);

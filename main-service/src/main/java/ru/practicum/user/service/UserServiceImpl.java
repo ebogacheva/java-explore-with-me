@@ -36,6 +36,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> get(@Nullable List<Long> ids, Integer from, Integer size) {
         if (Objects.nonNull(ids)) {
             return getUsersByIds(ids);

@@ -17,12 +17,12 @@ public class EventAdminController {
     private final AdminEventService eventService;
 
     @GetMapping
-    List<EventFullDto> getByAdmin(@Valid @ModelAttribute EventFilterParamsDto params) {
+    public List<EventFullDto> getByAdmin(@Valid @ModelAttribute EventFilterParamsDto params) {
         return eventService.getEventsByAdmin(params);
     }
 
     @PatchMapping(value = "/{eventId}")
-    EventFullDto update(@PathVariable Long eventId,
+    public EventFullDto update(@PathVariable Long eventId,
                         @Valid @RequestBody UpdateEventAdminRequest request) {
         return eventService.updateEventByAdmin(request, eventId);
     }

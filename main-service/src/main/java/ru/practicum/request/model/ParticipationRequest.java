@@ -17,10 +17,8 @@ import java.time.LocalDateTime;
 public class ParticipationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "created")
     @Builder.Default
     private LocalDateTime created = LocalDateTime.now();
 
@@ -32,7 +30,6 @@ public class ParticipationRequest {
     @JoinColumn(name = "requester_id")
     private User requester;
 
-    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private RequestStatus status = RequestStatus.PENDING;

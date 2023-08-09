@@ -62,12 +62,14 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CompilationDto> getAll(Boolean pinned, Integer from, Integer size) {
         Page<Compilation> compilations = compilationRepository.findAllByPinned(pinned, pageRequestOf(from, size));
         return compilations.map(compilationMapper::toCompilationDto).getContent();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CompilationDto get(Long compId) {
         Compilation compilation = getCompilationIfExist(compId);
         return compilationMapper.toCompilationDto(compilation);
@@ -83,15 +85,15 @@ public class CompilationServiceImpl implements CompilationService {
             return Collections.emptyList();
         }
         List<Event> events = eventRepository.findAllByIdIn(eventIds);
-        checkAllEventsFound(events, eventIds);
+        ///checkAllEventsFound(events, eventIds);
         return events;
     }
 
-    private void checkAllEventsFound(List<Event> events, List<Long> eventIds) {
-        if (events.size() < eventIds.size()) { // TODO: Есть ощущение, что это не нужно
-            throw new ExploreNotFoundException(EVENTS_FROM_COMPILATION_NOT_FOUND);
-        }
-    }
+//    private void checkAllEventsFound(List<Event> events, List<Long> eventIds) {
+//        if (events.size() < eventIds.size()) { // TODO: Есть ощущение, что это не нужно
+//            throw new ExploreNotFoundException(EVENTS_FROM_COMPILATION_NOT_FOUND);
+//        }
+//    }
 
     private List<EventShortDto> getEventShortDtos(List<Event> events) {
         return events.stream().map(eventMapper::toEventShortDto).collect(Collectors.toList());

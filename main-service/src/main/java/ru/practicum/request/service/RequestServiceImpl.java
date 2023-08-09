@@ -32,6 +32,7 @@ public class RequestServiceImpl implements RequestService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> get(Long userId) {
         getUserIfExists(userId);
         List<ParticipationRequest> requests = requestRepository.findByRequesterId(userId);
@@ -94,14 +95,14 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new ExploreNotFoundException(EVENT_NOT_FOUND_EXCEPTION));
     }
 
-    private static void checkUserIsInitiator(Long userId, Event event) {
+    private void checkUserIsInitiator(Long userId, Event event) {
         Long initiatorId = event.getInitiator().getId();
         if (userId.equals(initiatorId)) {
             throw new ExploreConflictException(OWNER_NOT_ALLOWED_TO_ADD_REQUEST);
         }
     }
 
-    private static void checkEventIsPublished(Event event) {
+    private void checkEventIsPublished(Event event) {
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new ExploreConflictException(INVALID_EVENT_STATUS);
         }

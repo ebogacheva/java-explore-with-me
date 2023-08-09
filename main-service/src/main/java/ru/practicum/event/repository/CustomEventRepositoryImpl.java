@@ -48,7 +48,7 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
         Root<Event> eventRoot = cq.from(Event.class);
         Predicate criteria = cb.conjunction();
 
-        if (Objects.isNull(params.getRangeStart())) {
+        if (params.getRangeStart() == null) {
             params.setRangeStart(LocalDateTime.now());
         }
 
@@ -73,7 +73,7 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
     }
 
     private void addTextFilter(Predicate criteria, CriteriaBuilder cb, Root<Event> eventRoot, String text) {
-        if (!Objects.isNull(text) && !text.isEmpty()) {
+        if (Objects.nonNull(text) && !text.isEmpty()) {
             String searchValue = ("%" + text + "%").toLowerCase();
             Predicate annotation = cb.like(cb.lower(eventRoot.get("annotation")), searchValue);
             Predicate description = cb.like(cb.lower(eventRoot.get("description")), searchValue);

@@ -1,9 +1,12 @@
 package ru.practicum.utils;
 
+import lombok.experimental.UtilityClass;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+@UtilityClass
 public class ExploreDateTimeFormatter {
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
