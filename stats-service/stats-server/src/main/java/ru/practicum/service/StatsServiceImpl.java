@@ -18,6 +18,7 @@ import static ru.practicum.stats_dto.TimeStampConverter.mapToLocalDateTime;
 
 @Service
 @AllArgsConstructor
+@Transactional(readOnly = true)
 public class StatsServiceImpl implements StatsService {
 
     private final StatsRepository statsRepository;
@@ -32,6 +33,7 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
+    @Transactional
     public List<ViewStats> getStatistics(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         checkTimeLimitParams(start, end);
         if (Objects.isNull(uris) || uris.isEmpty()) {

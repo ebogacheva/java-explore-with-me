@@ -39,7 +39,7 @@ services:
       - ewm-db
     environment:
       - STATS_SERVER_URL=http://stats-server:9090
-      - EWM_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewm
+      - EWM_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
       - DATASOURCE_USER=root
       - DATASOURCE_PASSWORD=password
 
