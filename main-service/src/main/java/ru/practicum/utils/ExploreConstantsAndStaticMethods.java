@@ -40,6 +40,10 @@ public class ExploreConstantsAndStaticMethods {
         public static final String OWNER_NOT_ALLOWED_TO_ADD_REQUEST =
                 "Event owner not allowed to create request to his own event.";
 
+        /*----------Subscription String Utils------------*/
+        public static final String SUBSCRIPTION_NOT_FOUND = "Subscription not found.";
+
+
         public static Pageable pageRequestOf(int from, int size) {
                 int page = from / size;
                 return PageRequest.of(page, size);

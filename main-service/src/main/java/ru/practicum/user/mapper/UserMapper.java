@@ -7,6 +7,8 @@ import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserShortDto;
 import ru.practicum.user.model.User;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
@@ -16,4 +18,6 @@ public interface UserMapper {
     UserDto toUserDto(User user);
 
     UserShortDto toUserShortDto(User user);
+
+    List<UserShortDto> toShortDtoList(List<User> users);
 }

@@ -14,12 +14,12 @@ import ru.practicum.event.controller.EventAdminController;
 import ru.practicum.event.controller.EventPrivateController;
 import ru.practicum.event.controller.EventPublicController;
 import ru.practicum.request.controller.RequestController;
-import ru.practicum.user.controller.UserController;
+import ru.practicum.user.controller.AdminUserController;
 
 import javax.validation.ConstraintViolationException;
 
 @RestControllerAdvice(assignableTypes = {
-        UserController.class,
+        AdminUserController.class,
         CategoryAdminController.class,
         CategoryPublicController.class,
         RequestController.class,
