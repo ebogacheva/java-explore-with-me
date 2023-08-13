@@ -14,12 +14,13 @@ import ru.practicum.event.controller.EventAdminController;
 import ru.practicum.event.controller.EventPrivateController;
 import ru.practicum.event.controller.EventPublicController;
 import ru.practicum.request.controller.RequestController;
-import ru.practicum.user.controller.AdminUserController;
+import ru.practicum.subscription.controller.SubscriptionController;
+import ru.practicum.user.controller.UserAdminController;
 
 import javax.validation.ConstraintViolationException;
 
 @RestControllerAdvice(assignableTypes = {
-        AdminUserController.class,
+        UserAdminController.class,
         CategoryAdminController.class,
         CategoryPublicController.class,
         RequestController.class,
@@ -27,7 +28,8 @@ import javax.validation.ConstraintViolationException;
         EventPublicController.class,
         EventPrivateController.class,
         AdminCompilationController.class,
-        PublicCompilationController.class
+        PublicCompilationController.class,
+        SubscriptionController.class
 })
 public class ErrorHandler {
 

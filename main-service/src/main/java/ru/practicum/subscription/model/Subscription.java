@@ -12,9 +12,6 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @NoArgsConstructor
-@Table(name = "subscriptions", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user1_id", "user2_id", "type"})
-})
 public class Subscription {
 
     @Id
@@ -22,9 +19,11 @@ public class Subscription {
     private Long id;
 
     @NotNull
+    @Column(name = "user1_id")
     private Long user1Id;
 
     @NotNull
+    @Column(name = "user2_id")
     private Long user2Id;
 
     @Enumerated(EnumType.STRING)

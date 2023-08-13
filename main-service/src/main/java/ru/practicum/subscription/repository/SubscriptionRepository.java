@@ -14,28 +14,36 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     String EVENTS_BY_CONFIRMED_PARTICIPANT =
             "select distinct e from requests r " +
-                    "inner join events e on r.eventId = e.id " +
-                    "where r.requesterId = ?1 and r.status = ru.practicum.enums.RequestStatus.CONFIRMED";
+                    "inner join events e on r.event.id = e.id " +
+                    "where r.requester.id = ?1 and r.status = ru.practicum.enums.RequestStatus.CONFIRMED";
 
     String PUBLISHED_EVENTS_FROM_ALL_SUBSCRIBED =
             "select distinct e from subscriptions s " +
-                    "inner join events e on s.user2_id = e.initiator_id " +
+                    "inner join events e on s.user2Id = e.initiator " +
                     "where e.state = ru.practicum.enums.EventState.PUBLISHED " +
-                    "and s.user1_id = ?1";
+                    "and s.user1Id = ?1";
 
     String PUBLISHED_EVENTS_FROM_BY_ALL_CONFIRMED_PARTICIPANTS =
-            "select distinct e from requests r " +
-                    "inner join events e on r.eventId = e.id " +
-                    "inner join subscriptions s on s.user2_id = e.initiator_id " +
-                    "where s.user1_id = ?1 and r.status = ru.practicum.enums.RequestStatus.CONFIRMED";
+            "select distinct e from events e " +
+                    "inner join requests r on r.event.id = e.id " +
+                    "inner join subscriptions s on s.user2Id = r.requester.id " +
+                    "where s.user1Id = ?1 and r.status = ru.practicum.enums.RequestStatus.CONFIRMED";
 
     String USER2_BY_USER1_AND_TYPE =
             " select u from users u " +
-                    " inner join subscriptions s on u.id = s.user2_id " +
-                    " where s.user1_id = ?1 and type =?2";
+                    " join subscriptions s on u.id = s.user2Id " +
+                    " where s.user1Id = ?1 and s.type = ?2";
+
+    String USER1_BY_USER2_AND_TYPE =
+            " select u from users u " +
+                    " join subscriptions s on u.id = s.user1Id " +
+                    " where s.user2Id = ?1 and s.type = ?2";
 
     @Query(USER2_BY_USER1_AND_TYPE)
     List<User> getUsersSubscribed(Long user1Id, SubscriptionType type);
+
+    @Query(USER1_BY_USER2_AND_TYPE)
+    List<User> getSubscribers(Long user2Id, SubscriptionType type);
 
     @Query(PUBLISHED_EVENTS_FROM_ALL_SUBSCRIBED)
     List<Event> getPublishedEventsFromAllUsersSubscribed(Long user1Id);
@@ -46,5 +54,5 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     @Query(EVENTS_BY_CONFIRMED_PARTICIPANT)
     List<Event> getEventsByParticipant(Long requesterId);
 
-    Optional<Subscription> getByUser1IdUser2IdAndType(Long user1Id, Long user2Id, SubscriptionType type);
+    Optional<Subscription> getByUser1IdAndUser2IdAndType(Long user1Id, Long user2Id, SubscriptionType type);
 }

@@ -72,7 +72,6 @@ CREATE TABLE IF NOT EXISTS subscriptions
     user1_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
     user2_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
     type VARCHAR(255) NOT NULL,
-    CONSTRAINT pk_subscriptions PRIMARY KEY (id),
-    CONSTRAINT unique_subscription_combination UNIQUE (user1_id, user2_id, type)
+    CONSTRAINT pk_subscriptions PRIMARY KEY (id)
 );
 

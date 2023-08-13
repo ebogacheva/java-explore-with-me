@@ -8,6 +8,7 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
+import ru.practicum.exception.ExploreConflictException;
 import ru.practicum.exception.ExploreNotFoundException;
 import ru.practicum.subscription.model.Subscription;
 import ru.practicum.subscription.repository.SubscriptionRepository;
@@ -37,9 +38,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public void subscribe(Long userId, Long otherId, SubscriptionType type) {
         checkUsersExistenceById(userId, otherId);
-        if (subRepository.getByUser1IdUser2IdAndType(userId, otherId, type).isEmpty()) {
+        if (subRepository.getByUser1IdAndUser2IdAndType(userId, otherId, type).isEmpty()) {
             Subscription newSub = createNewSubscription(userId, otherId, type);
             subRepository.save(newSub);
+        } else {
+            throw new ExploreConflictException("Подписка уже существует.");
         }
     }
 
@@ -86,7 +89,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private Subscription getSubscriptionIfExists(Long userId, Long otherId, SubscriptionType type) {
-        return subRepository.getByUser1IdUser2IdAndType(userId, otherId, type)
+        return subRepository.getByUser1IdAndUser2IdAndType(userId, otherId, type)
                 .orElseThrow(() -> new ExploreNotFoundException(SUBSCRIPTION_NOT_FOUND));
     }
 

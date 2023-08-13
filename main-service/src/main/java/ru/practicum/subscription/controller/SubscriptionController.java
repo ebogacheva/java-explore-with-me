@@ -1,6 +1,7 @@
 package ru.practicum.subscription.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.enums.SubscriptionType;
 import ru.practicum.event.dto.EventShortDto;
@@ -17,14 +18,15 @@ public class SubscriptionController {
 
     private final SubscriptionServiceImpl subService;
 
-    @PutMapping(value = "/{userId}/subscriptions/{otherId}")
+    @PostMapping(value = "/{userId}/subscriptions/{otherId}")
     public void subscribe(@PathVariable Long userId,
                           @PathVariable Long otherId,
                           @RequestParam @NotNull SubscriptionType type) {
         subService.subscribe(userId, otherId, type);
     }
 
-    @DeleteMapping(value = "/{userId}/subscriptions/{friendId}")
+    @DeleteMapping(value = "/{userId}/subscriptions/{otherId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cancel(@PathVariable Long userId,
                        @PathVariable Long otherId,
                        @RequestParam @NotNull SubscriptionType type) {
