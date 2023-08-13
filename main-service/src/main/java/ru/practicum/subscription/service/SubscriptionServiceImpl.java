@@ -2,12 +2,10 @@ package ru.practicum.subscription.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.enums.EventState;
 import ru.practicum.enums.SubscriptionType;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ExploreConflictException;
 import ru.practicum.exception.ExploreNotFoundException;
 import ru.practicum.subscription.model.Subscription;
@@ -18,18 +16,17 @@ import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static ru.practicum.enums.SubscriptionType.EVENTS;
 import static ru.practicum.enums.SubscriptionType.PARTICIPATIONS;
-import static ru.practicum.utils.ExploreConstantsAndStaticMethods.SUBSCRIPTION_NOT_FOUND;
-import static ru.practicum.utils.ExploreConstantsAndStaticMethods.USER_NOT_FOUND_EXCEPTION_MESSAGE;
+import static ru.practicum.utils.ExploreConstantsAndStaticMethods.*;
 
 @Service
 @RequiredArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionRepository subRepository;
-    private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final EventMapper eventMapper;
@@ -38,11 +35,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public void subscribe(Long userId, Long otherId, SubscriptionType type) {
         checkUsersExistenceById(userId, otherId);
-        if (subRepository.getByUser1IdAndUser2IdAndType(userId, otherId, type).isEmpty()) {
+        if (getSubscription(userId, otherId, type).isEmpty()) {
             Subscription newSub = createNewSubscription(userId, otherId, type);
             subRepository.save(newSub);
         } else {
-            throw new ExploreConflictException("Подписка уже существует.");
+            throw new ExploreConflictException(SUBSCRIPTION_ALREADY_EXISTS);
         }
     }
 
@@ -77,7 +74,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private List<EventShortDto> getEventsByOwner(Long userId, Long otherId) {
         getSubscriptionIfExists(userId, otherId, EVENTS);
         return eventMapper.toEventShortDtoListFromEvents(
-                eventRepository.findByInitiatorIdAndState(otherId, EventState.PUBLISHED)
+                subRepository.getEventsByOwner(otherId)
         );
     }
 
@@ -91,6 +88,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private Subscription getSubscriptionIfExists(Long userId, Long otherId, SubscriptionType type) {
         return subRepository.getByUser1IdAndUser2IdAndType(userId, otherId, type)
                 .orElseThrow(() -> new ExploreNotFoundException(SUBSCRIPTION_NOT_FOUND));
+    }
+
+    private Optional<Subscription> getSubscription(Long userId, Long otherId, SubscriptionType type) {
+        return subRepository.getByUser1IdAndUser2IdAndType(userId, otherId, type);
     }
 
     private Subscription createNewSubscription(Long userId, Long otherId, SubscriptionType type) {

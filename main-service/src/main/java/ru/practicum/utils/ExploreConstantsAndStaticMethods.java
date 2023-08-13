@@ -42,6 +42,7 @@ public class ExploreConstantsAndStaticMethods {
 
         /*----------Subscription String Utils------------*/
         public static final String SUBSCRIPTION_NOT_FOUND = "Subscription not found.";
+        public static final String SUBSCRIPTION_ALREADY_EXISTS = "Subscription already exists.";
 
 
         public static Pageable pageRequestOf(int from, int size) {
