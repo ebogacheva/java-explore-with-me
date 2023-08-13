@@ -2,7 +2,6 @@ package ru.practicum.subscription.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.enums.EventSort;
 import ru.practicum.enums.EventState;
 import ru.practicum.enums.SubscriptionType;
 import ru.practicum.event.dto.EventShortDto;
@@ -10,7 +9,6 @@ import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ExploreNotFoundException;
-import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.subscription.model.Subscription;
 import ru.practicum.subscription.repository.SubscriptionRepository;
 import ru.practicum.user.dto.UserShortDto;
@@ -31,7 +29,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionRepository subRepository;
     private final EventRepository eventRepository;
-    private final RequestRepository requestRepository;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final EventMapper eventMapper;
@@ -66,20 +63,26 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public List<EventSort> getSubscriptions(Long userId, SubscriptionType type) {
-
+    public List<EventShortDto> getSubscriptions(Long userId, SubscriptionType type) {
+        checkUsersExistenceById(userId);
+        List<Event> events = (type == SubscriptionType.EVENTS)
+                ? subRepository.getPublishedEventsFromAllUsersSubscribed(userId)
+                : subRepository.getParticipantEventsFromAllUsersSubscribed(userId);
+        return eventMapper.toEventShortDtoListFromEvents(events);
     }
 
     private List<EventShortDto> getEventsByOwner(Long userId, Long otherId) {
         getSubscriptionIfExists(userId, otherId, EVENTS);
-        List<Event> events = eventRepository.findByInitiatorIdAndState(otherId, EventState.PUBLISHED);
-        return eventMapper.toEventShortDtoListFromEvents(events);
+        return eventMapper.toEventShortDtoListFromEvents(
+                eventRepository.findByInitiatorIdAndState(otherId, EventState.PUBLISHED)
+        );
     }
 
     private List<EventShortDto> getEventsByParticipant(Long userId, Long otherId) {
         getSubscriptionIfExists(userId, otherId, PARTICIPATIONS);
-        List<Event> events = subRepository.getEventsByParticipant(otherId);
-        return eventMapper.toEventShortDtoListFromEvents(events);
+        return eventMapper.toEventShortDtoListFromEvents(
+                subRepository.getEventsByParticipant(otherId)
+        );
     }
 
     private Subscription getSubscriptionIfExists(Long userId, Long otherId, SubscriptionType type) {
@@ -101,8 +104,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-    private User getUserIfExists(Long userId) {
-        return userRepository.findById(userId)
+    private void getUserIfExists(Long userId) {
+        userRepository.findById(userId)
                 .orElseThrow(() -> new ExploreNotFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE));
     }
 }
