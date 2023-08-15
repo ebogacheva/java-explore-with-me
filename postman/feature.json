@@ -1359,7 +1359,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/users/:userId/subscriptions/:otherId?type=EVENTS",
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=EVENTS",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1367,7 +1367,7 @@
 										"users",
 										":userId",
 										"subscriptions",
-										":otherId"
+										":ownerId"
 									],
 									"query": [
 										{
@@ -1381,7 +1381,7 @@
 											"value": "{{uid3}}"
 										},
 										{
-											"key": "otherId",
+											"key": "ownerId",
 											"value": "{{uid1}}"
 										}
 									]
@@ -1414,7 +1414,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/users/:userId/subscriptions/:otherId?type=PARTICIPATIONS",
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=PARTICIPATIONS",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1422,7 +1422,7 @@
 										"users",
 										":userId",
 										"subscriptions",
-										":otherId"
+										":ownerId"
 									],
 									"query": [
 										{
@@ -1436,7 +1436,7 @@
 											"value": "{{uid2}}"
 										},
 										{
-											"key": "otherId",
+											"key": "ownerId",
 											"value": "{{uid3}}"
 										}
 									]
@@ -1471,7 +1471,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/users/:userId/subscriptions/:otherId?type=PARTICIPATIONS",
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=PARTICIPATIONS",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1479,7 +1479,7 @@
 										"users",
 										":userId",
 										"subscriptions",
-										":otherId"
+										":ownerId"
 									],
 									"query": [
 										{
@@ -1493,7 +1493,7 @@
 											"value": "{{uid2}}"
 										},
 										{
-											"key": "otherId",
+											"key": "ownerId",
 											"value": "{{uid3}}"
 										}
 									]
@@ -1668,7 +1668,7 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}/users/:userId/subscriptions/:otherId?type=EVENTS",
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=EVENTS",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1676,7 +1676,7 @@
 										"users",
 										":userId",
 										"subscriptions",
-										":otherId"
+										":ownerId"
 									],
 									"query": [
 										{
@@ -1690,7 +1690,7 @@
 											"value": "{{uid3}}"
 										},
 										{
-											"key": "otherId",
+											"key": "ownerId",
 											"value": "{{uid1}}"
 										}
 									]
@@ -1820,7 +1820,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/users/:userId/subscriptions/participation/:otherId",
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/participation/:ownerId",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1829,7 +1829,7 @@
 										":userId",
 										"subscriptions",
 										"participation",
-										":otherId"
+										":ownerId"
 									],
 									"variable": [
 										{
@@ -1837,7 +1837,7 @@
 											"value": "{{uid2}}"
 										},
 										{
-											"key": "otherId",
+											"key": "ownerId",
 											"value": "{{uid3}}"
 										}
 									]
@@ -1870,7 +1870,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/users/:userId/subscriptions/:otherId?type=EVENTS",
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=EVENTS",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1878,7 +1878,7 @@
 										"users",
 										":userId",
 										"subscriptions",
-										":otherId"
+										":ownerId"
 									],
 									"query": [
 										{
@@ -1892,7 +1892,7 @@
 											"value": "{{uid3}}"
 										},
 										{
-											"key": "otherId",
+											"key": "ownerId",
 											"value": "{{uid1}}"
 										}
 									]
@@ -1955,7 +1955,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/users/:userId/subscriptions/events/:otherId",
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/events/:ownerId",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -1964,7 +1964,7 @@
 										":userId",
 										"subscriptions",
 										"events",
-										":otherId"
+										":ownerId"
 									],
 									"variable": [
 										{
@@ -1972,7 +1972,7 @@
 											"value": "{{uid3}}"
 										},
 										{
-											"key": "otherId",
+											"key": "ownerId",
 											"value": "{{uid1}}"
 										}
 									]
@@ -2005,7 +2005,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/users/:userId/subscriptions/:otherId?type=PARTICIPATIONS",
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=PARTICIPATIONS",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -2013,7 +2013,7 @@
 										"users",
 										":userId",
 										"subscriptions",
-										":otherId"
+										":ownerId"
 									],
 									"query": [
 										{
@@ -2027,7 +2027,7 @@
 											"value": "{{uid1}}"
 										},
 										{
-											"key": "otherId",
+											"key": "ownerId",
 											"value": "{{uid3}}"
 										}
 									]
@@ -2060,7 +2060,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/users/:userId/subscriptions/:otherId?type=PARTICIPATIONS",
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=PARTICIPATIONS",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -2068,7 +2068,7 @@
 										"users",
 										":userId",
 										"subscriptions",
-										":otherId"
+										":ownerId"
 									],
 									"query": [
 										{
@@ -2082,7 +2082,7 @@
 											"value": "{{uid1}}"
 										},
 										{
-											"key": "otherId",
+											"key": "ownerId",
 											"value": "{{uid2}}"
 										}
 									]
@@ -2189,7 +2189,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseUrl}}/users/:userId/subscriptions/:otherId?type=EVENTS",
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=EVENTS",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -2197,7 +2197,7 @@
 										"users",
 										":userId",
 										"subscriptions",
-										":otherId"
+										":ownerId"
 									],
 									"query": [
 										{
@@ -2211,7 +2211,7 @@
 											"value": "{{uid3}}"
 										},
 										{
-											"key": "otherId",
+											"key": "ownerId",
 											"value": "{{uid2}}"
 										}
 									]

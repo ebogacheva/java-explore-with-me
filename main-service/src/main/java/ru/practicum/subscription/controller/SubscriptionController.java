@@ -18,19 +18,19 @@ public class SubscriptionController {
 
     private final SubscriptionServiceImpl subService;
 
-    @PostMapping(value = "/{userId}/subscriptions/{otherId}")
+    @PostMapping(value = "/{userId}/subscriptions/{ownerId}")
     public void subscribe(@PathVariable Long userId,
-                          @PathVariable Long otherId,
+                          @PathVariable Long ownerId,
                           @RequestParam @NotNull SubscriptionType type) {
-        subService.subscribe(userId, otherId, type);
+        subService.subscribe(userId, ownerId, type);
     }
 
-    @DeleteMapping(value = "/{userId}/subscriptions/{otherId}")
+    @DeleteMapping(value = "/{userId}/subscriptions/{ownerId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cancel(@PathVariable Long userId,
-                       @PathVariable Long otherId,
+                       @PathVariable Long ownerId,
                        @RequestParam @NotNull SubscriptionType type) {
-        subService.cancel(userId, otherId, type);
+        subService.cancel(userId, ownerId, type);
     }
 
     @GetMapping(value = "/{userId}/subscriptions")
@@ -39,16 +39,16 @@ public class SubscriptionController {
         return subService.get(userId, type);
     }
 
-    @GetMapping(value = "/{userId}/subscriptions/events/{otherId}")
+    @GetMapping(value = "/{userId}/subscriptions/events/{ownerId}")
     public List<EventShortDto> getEvents(@PathVariable Long userId,
-                                         @PathVariable Long otherId) {
-        return subService.getSubscriptions(userId, otherId, SubscriptionType.EVENTS);
+                                         @PathVariable Long ownerId) {
+        return subService.getSubscriptions(userId, ownerId, SubscriptionType.EVENTS);
     }
 
-    @GetMapping(value = "/{userId}/subscriptions/participation/{otherId}")
+    @GetMapping(value = "/{userId}/subscriptions/participation/{ownerId}")
     public List<EventShortDto> getParticipation(@PathVariable Long userId,
-                                        @PathVariable Long otherId) {
-        return subService.getSubscriptions(userId, otherId, SubscriptionType.PARTICIPATIONS);
+                                        @PathVariable Long ownerId) {
+        return subService.getSubscriptions(userId, ownerId, SubscriptionType.PARTICIPATIONS);
     }
 
     @GetMapping(value = "/{userId}/subscriptions/events")

@@ -33,10 +33,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 
     @Override
-    public void subscribe(Long userId, Long otherId, SubscriptionType type) {
-        checkUsersExistenceById(userId, otherId);
-        if (getSubscription(userId, otherId, type).isEmpty()) {
-            Subscription newSub = createNewSubscription(userId, otherId, type);
+    public void subscribe(Long userId, Long ownerId, SubscriptionType type) {
+        checkUsersExistenceById(userId, ownerId);
+        if (getSubscription(userId, ownerId, type).isEmpty()) {
+            Subscription newSub = createNewSubscription(userId, ownerId, type);
             subRepository.save(newSub);
         } else {
             throw new ExploreConflictException(SUBSCRIPTION_ALREADY_EXISTS);
@@ -44,8 +44,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void cancel(Long userId, Long otherId, SubscriptionType type) {
-        Subscription sub = getSubscriptionIfExists(userId, otherId, type);
+    public void cancel(Long userId, Long ownerId, SubscriptionType type) {
+        Subscription sub = getSubscriptionIfExists(userId, ownerId, type);
         subRepository.delete(sub);
     }
 
@@ -56,48 +56,48 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public List<EventShortDto> getSubscriptions(Long userId, Long otherId, SubscriptionType type) {
+    public List<EventShortDto> getSubscriptions(Long userId, Long ownerId, SubscriptionType type) {
         return  (type == SubscriptionType.EVENTS)
-                ? getEventsByOwner(userId, otherId)
-                : getEventsByParticipant(userId, otherId);
+                ? getEventsByOwner(userId, ownerId)
+                : getEventsByParticipant(userId, ownerId);
     }
 
     @Override
     public List<EventShortDto> getSubscriptions(Long userId, SubscriptionType type) {
         checkUsersExistenceById(userId);
         List<Event> events = (type == SubscriptionType.EVENTS)
-                ? subRepository.getPublishedEventsFromAllUsersSubscribed(userId)
-                : subRepository.getParticipantEventsFromAllUsersSubscribed(userId);
+                ? subRepository.getOwnersEventsFromAllSubscribed(userId)
+                : subRepository.getParticipantEventsFromAllSubscribed(userId);
         return eventMapper.toEventShortDtoListFromEvents(events);
     }
 
-    private List<EventShortDto> getEventsByOwner(Long userId, Long otherId) {
-        getSubscriptionIfExists(userId, otherId, EVENTS);
+    private List<EventShortDto> getEventsByOwner(Long userId, Long ownerId) {
+        getSubscriptionIfExists(userId, ownerId, EVENTS);
         return eventMapper.toEventShortDtoListFromEvents(
-                subRepository.getEventsByOwner(otherId)
+                subRepository.getEventsByOwner(ownerId)
         );
     }
 
-    private List<EventShortDto> getEventsByParticipant(Long userId, Long otherId) {
-        getSubscriptionIfExists(userId, otherId, PARTICIPATIONS);
+    private List<EventShortDto> getEventsByParticipant(Long userId, Long ownerId) {
+        getSubscriptionIfExists(userId, ownerId, PARTICIPATIONS);
         return eventMapper.toEventShortDtoListFromEvents(
-                subRepository.getEventsByParticipant(otherId)
+                subRepository.getEventsByParticipant(ownerId)
         );
     }
 
-    private Subscription getSubscriptionIfExists(Long userId, Long otherId, SubscriptionType type) {
-        return subRepository.getByUser1IdAndUser2IdAndType(userId, otherId, type)
+    private Subscription getSubscriptionIfExists(Long userId, Long ownerId, SubscriptionType type) {
+        return subRepository.getBySubscriberAndOwnerAndType(userId, ownerId, type)
                 .orElseThrow(() -> new ExploreNotFoundException(SUBSCRIPTION_NOT_FOUND));
     }
 
-    private Optional<Subscription> getSubscription(Long userId, Long otherId, SubscriptionType type) {
-        return subRepository.getByUser1IdAndUser2IdAndType(userId, otherId, type);
+    private Optional<Subscription> getSubscription(Long userId, Long ownerId, SubscriptionType type) {
+        return subRepository.getBySubscriberAndOwnerAndType(userId, ownerId, type);
     }
 
-    private Subscription createNewSubscription(Long userId, Long otherId, SubscriptionType type) {
+    private Subscription createNewSubscription(Long userId, Long ownerId, SubscriptionType type) {
         return Subscription.builder()
-                .user1Id(userId)
-                .user2Id(otherId)
+                .subscriber(userId)
+                .owner(ownerId)
                 .type(type)
                 .build();
     }

@@ -12,54 +12,54 @@ import java.util.Optional;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
-    String EVENTS_BY_CONFIRMED_PARTICIPANT =
+    String EVENTS_BY_CONFIRMED_PARTICIPANT_SUBSCRIBED =
             "select distinct e from requests r " +
                     "inner join events e on r.event.id = e.id " +
                     "where r.requester.id = ?1 and r.status = ru.practicum.enums.RequestStatus.CONFIRMED";
 
-    String EVENTS_BY_OWNER =
+    String EVENTS_BY_OWNER_SUBSCRIBED =
             "select distinct e from events e " +
                     "where e.initiator.id = ?1 and e.state = ru.practicum.enums.EventState.PUBLISHED";
 
-    String PUBLISHED_EVENTS_FROM_ALL_SUBSCRIBED =
+    String OWNERS_EVENTS_FROM_ALL_SUBSCRIBED =
             "select distinct e from subscriptions s " +
-                    "inner join events e on s.user2Id = e.initiator.id " +
+                    "inner join events e on s.owner = e.initiator.id " +
                     "where e.state = ru.practicum.enums.EventState.PUBLISHED " +
-                    "and s.user1Id = ?1";
+                    "and s.subscriber = ?1";
 
-    String PUBLISHED_EVENTS_FROM_BY_ALL_CONFIRMED_PARTICIPANTS_SUBSCRIBED =
+    String EVENTS_FROM_BY_ALL_CONFIRMED_PARTICIPANTS_SUBSCRIBED =
             "select distinct e from events e " +
                     "inner join requests r on r.event.id = e.id " +
-                    "inner join subscriptions s on s.user2Id = r.requester.id " +
-                    "where s.user1Id = ?1 and r.status = ru.practicum.enums.RequestStatus.CONFIRMED";
+                    "inner join subscriptions s on s.owner = r.requester.id " +
+                    "where s.subscriber = ?1 and r.status = ru.practicum.enums.RequestStatus.CONFIRMED";
 
-    String USER2_BY_USER1_AND_TYPE =
+    String OWNERS_BY_SUBSCRIBER_AND_TYPE =
             " select u from users u " +
-                    " join subscriptions s on u.id = s.user2Id " +
-                    " where s.user1Id = ?1 and s.type = ?2";
+                    " join subscriptions s on u.id = s.owner " +
+                    " where s.subscriber = ?1 and s.type = ?2";
 
-    String USER1_BY_USER2_AND_TYPE =
+    String SUBSCRIBERS_BY_OWNER_AND_TYPE =
             " select u from users u " +
-                    " join subscriptions s on u.id = s.user1Id " +
-                    " where s.user2Id = ?1 and s.type = ?2";
+                    " join subscriptions s on u.id = s.subscriber " +
+                    " where s.owner = ?1 and s.type = ?2";
 
-    @Query(USER2_BY_USER1_AND_TYPE)
+    @Query(OWNERS_BY_SUBSCRIBER_AND_TYPE)
     List<User> getUsersSubscribed(Long user1Id, SubscriptionType type);
 
-    @Query(USER1_BY_USER2_AND_TYPE)
-    List<User> getSubscribers(Long user2Id, SubscriptionType type);
+    @Query(SUBSCRIBERS_BY_OWNER_AND_TYPE)
+    List<User> getSubscribers(Long owner, SubscriptionType type);
 
-    @Query(PUBLISHED_EVENTS_FROM_ALL_SUBSCRIBED)
-    List<Event> getPublishedEventsFromAllUsersSubscribed(Long user1Id);
+    @Query(OWNERS_EVENTS_FROM_ALL_SUBSCRIBED)
+    List<Event> getOwnersEventsFromAllSubscribed(Long subscriber);
 
-    @Query(PUBLISHED_EVENTS_FROM_BY_ALL_CONFIRMED_PARTICIPANTS_SUBSCRIBED)
-    List<Event> getParticipantEventsFromAllUsersSubscribed(Long user1Id);
+    @Query(EVENTS_FROM_BY_ALL_CONFIRMED_PARTICIPANTS_SUBSCRIBED)
+    List<Event> getParticipantEventsFromAllSubscribed(Long subscriber);
 
-    @Query(EVENTS_BY_CONFIRMED_PARTICIPANT)
+    @Query(EVENTS_BY_CONFIRMED_PARTICIPANT_SUBSCRIBED)
     List<Event> getEventsByParticipant(Long requesterId);
 
-    @Query(EVENTS_BY_OWNER)
+    @Query(EVENTS_BY_OWNER_SUBSCRIBED)
     List<Event> getEventsByOwner(Long initiatorId);
 
-    Optional<Subscription> getByUser1IdAndUser2IdAndType(Long user1Id, Long user2Id, SubscriptionType type);
+    Optional<Subscription> getBySubscriberAndOwnerAndType(Long subscriber, Long owner, SubscriptionType type);
 }

@@ -19,12 +19,12 @@ public class Subscription {
     private Long id;
 
     @NotNull
-    @Column(name = "user1_id")
-    private Long user1Id;
+    @Column(name = "subscriber")
+    private Long subscriber;
 
     @NotNull
-    @Column(name = "user2_id")
-    private Long user2Id;
+    @Column(name = "owner")
+    private Long owner;
 
     @Enumerated(EnumType.STRING)
     @NotNull
