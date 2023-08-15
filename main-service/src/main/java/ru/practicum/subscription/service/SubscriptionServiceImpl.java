@@ -2,6 +2,7 @@ package ru.practicum.subscription.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.enums.SubscriptionType;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
@@ -33,6 +34,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 
     @Override
+    @Transactional
     public void subscribe(Long userId, Long ownerId, SubscriptionType type) {
         checkUsersExistenceById(userId, ownerId);
         if (getSubscription(userId, ownerId, type).isEmpty()) {
@@ -44,18 +46,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    @Transactional
     public void cancel(Long userId, Long ownerId, SubscriptionType type) {
         Subscription sub = getSubscriptionIfExists(userId, ownerId, type);
         subRepository.delete(sub);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserShortDto> get(Long userId, SubscriptionType type) {
         List<User> subscriptions = subRepository.getUsersSubscribed(userId, type);
         return userMapper.toShortDtoList(subscriptions);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getSubscriptions(Long userId, Long ownerId, SubscriptionType type) {
         return  (type == SubscriptionType.EVENTS)
                 ? getEventsByOwner(userId, ownerId)
@@ -63,6 +68,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getSubscriptions(Long userId, SubscriptionType type) {
         checkUsersExistenceById(userId);
         List<Event> events = (type == SubscriptionType.EVENTS)
