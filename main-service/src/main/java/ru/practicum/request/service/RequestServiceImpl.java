@@ -22,7 +22,6 @@ import static ru.practicum.utils.ExploreConstantsAndStaticMethods.*;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class RequestServiceImpl implements RequestService {
 
     private final RequestRepository requestRepository;

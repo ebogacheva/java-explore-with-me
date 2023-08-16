@@ -45,4 +45,7 @@ public interface EventMapper {
     EventFilterParams toEventFilterParams(EventFilterParamsDto filterDto, LocalDateTime start, LocalDateTime end);
 
     List<EventShortDto> toEventShortDtoList(List<EventDto> eventDtos);
+
+    List<EventShortDto> toEventShortDtoListFromEvents(List<Event> events);
 }
+

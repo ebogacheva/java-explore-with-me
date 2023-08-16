@@ -1,0 +1,2604 @@
+{
+	"info": {
+		"_postman_id": "515c3cb1-daf2-45be-91e3-4595ddca7cd6",
+		"name": "Test Explore With me - Subscriptions",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19940805"
+	},
+	"item": [
+		{
+			"name": "Create Users, Events, Requests",
+			"item": [
+				{
+					"name": "New User #1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const source = JSON.parse(pm.request.body.raw);",
+									"const target = pm.response.json();",
+									"pm.collectionVariables.set(\"uid1\", target.id);",
+									"",
+									"pm.test(\"Пользователь должен содержать поля: id, name, email\", function () {",
+									"pm.expect(target).to.have.property('id');",
+									"pm.expect(target).to.have.property('name');",
+									"pm.expect(target).to.have.property('email');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.id).to.not.be.null;",
+									"    pm.expect(source.name).equal(target.name, 'Имя пользователя должно соответствовать отправленному в запросе');",
+									"    pm.expect(source.email).equal(target.email, 'Почта пользователя должна соответствовать отправленной в запросе');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    let user;",
+									"    try {",
+									"        user = rnd.getUser();",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"    pm.request.body.update({",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(user),",
+									"        options: { raw: { language: 'json' } }",
+									"    });",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New User #2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const source = JSON.parse(pm.request.body.raw);",
+									"const target = pm.response.json();",
+									"pm.collectionVariables.set(\"uid2\", target.id);",
+									"",
+									"pm.test(\"Пользователь должен содержать поля: id, name, email\", function () {",
+									"pm.expect(target).to.have.property('id');",
+									"pm.expect(target).to.have.property('name');",
+									"pm.expect(target).to.have.property('email');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.id).to.not.be.null;",
+									"    pm.expect(source.name).equal(target.name, 'Имя пользователя должно соответствовать отправленному в запросе');",
+									"    pm.expect(source.email).equal(target.email, 'Почта пользователя должна соответствовать отправленной в запросе');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    let user;",
+									"    try {",
+									"        user = rnd.getUser();",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"    pm.request.body.update({",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(user),",
+									"        options: { raw: { language: 'json' } }",
+									"    });",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New User #3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const source = JSON.parse(pm.request.body.raw);",
+									"const target = pm.response.json();",
+									"pm.collectionVariables.set(\"uid3\", target.id);",
+									"",
+									"pm.test(\"Пользователь должен содержать поля: id, name, email\", function () {",
+									"pm.expect(target).to.have.property('id');",
+									"pm.expect(target).to.have.property('name');",
+									"pm.expect(target).to.have.property('email');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.id).to.not.be.null;",
+									"    pm.expect(source.name).equal(target.name, 'Имя пользователя должно соответствовать отправленному в запросе');",
+									"    pm.expect(source.email).equal(target.email, 'Почта пользователя должна соответствовать отправленной в запросе');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    let user;",
+									"    try {",
+									"        user = rnd.getUser();",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"    pm.request.body.update({",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(user),",
+									"        options: { raw: { language: 'json' } }",
+									"    });",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const source = JSON.parse(pm.request.body.raw);",
+									"const target = pm.response.json();",
+									"pm.collectionVariables.set(\"catid\", target.id);",
+									"",
+									"pm.test(\"Категория должна содержать поля: id, name\", function () {",
+									"pm.expect(target).to.have.property('id');",
+									"pm.expect(target).to.have.property('name');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.id).to.not.be.null;",
+									"    pm.expect(source.name).equal(target.name, 'Название категории должно совпадать с отправленным');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    let category;",
+									"    try {",
+									"        category = rnd.getCategory();",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"    pm.request.body.update({",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(category),",
+									"        options: { raw: { language: 'json' } }",
+									"    });",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/categories",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Event #1 by User #1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    let event;",
+									"    try {",
+									"        const catid = pm.collectionVariables.get(\"catid\");",
+									"        event = rnd.getEvent(catid);",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"    pm.request.body.update({",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(event),",
+									"        options: { raw: { language: 'json' } }",
+									"    });",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(201);  ",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const source = JSON.parse(pm.request.body.raw);",
+									"const target = pm.response.json();",
+									"pm.collectionVariables.set(\"eventid1\", target.id);",
+									"",
+									"",
+									"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, location, requestModeration\", function () {",
+									"pm.expect(target).to.have.property('id');",
+									"pm.expect(target).to.have.property('title');",
+									"pm.expect(target).to.have.property('annotation');",
+									"pm.expect(target).to.have.property('category');",
+									"pm.expect(target).to.have.property('paid');",
+									"pm.expect(target).to.have.property('eventDate');",
+									"pm.expect(target).to.have.property('initiator');",
+									"pm.expect(target).to.have.property('description');",
+									"pm.expect(target).to.have.property('participantLimit');",
+									"pm.expect(target).to.have.property('state');",
+									"pm.expect(target).to.have.property('createdOn');",
+									"pm.expect(target).to.have.property('location');",
+									"pm.expect(target).to.have.property('requestModeration');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.id).to.not.be.null;",
+									"    pm.expect(target.title).equal(source.title, 'Название события должно соответствовать названию события в запросе');",
+									"    pm.expect(target.annotation).equal(source.annotation, 'Аннотация события должна соответствовать аннотации события в запросе');",
+									"    pm.expect(target.paid.toString()).equal(source.paid.toString(), 'Стоимость события должна соответствовать стоимости события в запросе');",
+									"    pm.expect(target.eventDate).equal(source.eventDate, 'Дата проведения события должна соответствовать дате проведения события в запросе');",
+									"    pm.expect(target.description).equal(source.description, 'Описание события должно соответствовать описание события в запросе');",
+									"    pm.expect(target.participantLimit.toString()).equal(source.participantLimit.toString(), 'Лимит участников события должно соответствовать лимиту участников события в запросе');",
+									"    pm.expect(target.location.lat.toString()).equal(source.location.lat.toString(), 'Широта локации проведения события должна соответствовать широте локации проведения события в запросе');",
+									"    pm.expect(target.location.lon.toString()).equal(source.location.lon.toString(), 'Долгота локации проведения события должна соответствовать долготе локации проведения события в запросе');",
+									"    pm.expect(target.requestModeration.toString()).equal(source.requestModeration.toString(), 'Необходимость модерации события должна соответствовать необходимости модерации события в запросе');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/:userId/events",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								":userId",
+								"events"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{uid1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Event #1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+									"    pm.response.to.be.ok;    ",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const source = JSON.parse(pm.request.body.raw);",
+									"const target = pm.response.json();",
+									"const eventid = parseInt(pm.collectionVariables.get(\"eventid1\"));",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.state.toString()).equal(\"PUBLISHED\");",
+									"    pm.expect(eventid).equal(target.id, 'Id события должен соответствовать искомому событию');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"stateAction\": \"PUBLISH_EVENT\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/events/:eventId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"events",
+								":eventId"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{eventid1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Event #2 by User #1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    let event;",
+									"    try {",
+									"        const catid = pm.collectionVariables.get(\"catid\");",
+									"        event = rnd.getEvent(catid);",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"    pm.request.body.update({",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(event),",
+									"        options: { raw: { language: 'json' } }",
+									"    });",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(201);  ",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const source = JSON.parse(pm.request.body.raw);",
+									"const target = pm.response.json();",
+									"pm.collectionVariables.set(\"eventid2\", target.id);",
+									"",
+									"",
+									"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, location, requestModeration\", function () {",
+									"pm.expect(target).to.have.property('id');",
+									"pm.expect(target).to.have.property('title');",
+									"pm.expect(target).to.have.property('annotation');",
+									"pm.expect(target).to.have.property('category');",
+									"pm.expect(target).to.have.property('paid');",
+									"pm.expect(target).to.have.property('eventDate');",
+									"pm.expect(target).to.have.property('initiator');",
+									"pm.expect(target).to.have.property('description');",
+									"pm.expect(target).to.have.property('participantLimit');",
+									"pm.expect(target).to.have.property('state');",
+									"pm.expect(target).to.have.property('createdOn');",
+									"pm.expect(target).to.have.property('location');",
+									"pm.expect(target).to.have.property('requestModeration');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.id).to.not.be.null;",
+									"    pm.expect(target.title).equal(source.title, 'Название события должно соответствовать названию события в запросе');",
+									"    pm.expect(target.annotation).equal(source.annotation, 'Аннотация события должна соответствовать аннотации события в запросе');",
+									"    pm.expect(target.paid.toString()).equal(source.paid.toString(), 'Стоимость события должна соответствовать стоимости события в запросе');",
+									"    pm.expect(target.eventDate).equal(source.eventDate, 'Дата проведения события должна соответствовать дате проведения события в запросе');",
+									"    pm.expect(target.description).equal(source.description, 'Описание события должно соответствовать описание события в запросе');",
+									"    pm.expect(target.participantLimit.toString()).equal(source.participantLimit.toString(), 'Лимит участников события должно соответствовать лимиту участников события в запросе');",
+									"    pm.expect(target.location.lat.toString()).equal(source.location.lat.toString(), 'Широта локации проведения события должна соответствовать широте локации проведения события в запросе');",
+									"    pm.expect(target.location.lon.toString()).equal(source.location.lon.toString(), 'Долгота локации проведения события должна соответствовать долготе локации проведения события в запросе');",
+									"    pm.expect(target.requestModeration.toString()).equal(source.requestModeration.toString(), 'Необходимость модерации события должна соответствовать необходимости модерации события в запросе');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/:userId/events",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								":userId",
+								"events"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{uid1}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Event #2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+									"    pm.response.to.be.ok;    ",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const source = JSON.parse(pm.request.body.raw);",
+									"const target = pm.response.json();",
+									"const eventid = parseInt(pm.collectionVariables.get(\"eventid2\"));",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.state.toString()).equal(\"PUBLISHED\");",
+									"    pm.expect(eventid).equal(target.id, 'Id события должен соответствовать искомому событию');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"stateAction\": \"PUBLISH_EVENT\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/events/:eventId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"events",
+								":eventId"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{eventid2}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Event #3 by User #2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    let event;",
+									"    try {",
+									"        const catid = pm.collectionVariables.get(\"catid\");",
+									"        event = rnd.getEvent(catid);",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"    pm.request.body.update({",
+									"        mode: 'raw',",
+									"        raw: JSON.stringify(event),",
+									"        options: { raw: { language: 'json' } }",
+									"    });",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(201);  ",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const source = JSON.parse(pm.request.body.raw);",
+									"const target = pm.response.json();",
+									"pm.collectionVariables.set(\"eventid3\", target.id);",
+									"",
+									"",
+									"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, location, requestModeration\", function () {",
+									"pm.expect(target).to.have.property('id');",
+									"pm.expect(target).to.have.property('title');",
+									"pm.expect(target).to.have.property('annotation');",
+									"pm.expect(target).to.have.property('category');",
+									"pm.expect(target).to.have.property('paid');",
+									"pm.expect(target).to.have.property('eventDate');",
+									"pm.expect(target).to.have.property('initiator');",
+									"pm.expect(target).to.have.property('description');",
+									"pm.expect(target).to.have.property('participantLimit');",
+									"pm.expect(target).to.have.property('state');",
+									"pm.expect(target).to.have.property('createdOn');",
+									"pm.expect(target).to.have.property('location');",
+									"pm.expect(target).to.have.property('requestModeration');",
+									"});",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.id).to.not.be.null;",
+									"    pm.expect(target.title).equal(source.title, 'Название события должно соответствовать названию события в запросе');",
+									"    pm.expect(target.annotation).equal(source.annotation, 'Аннотация события должна соответствовать аннотации события в запросе');",
+									"    pm.expect(target.paid.toString()).equal(source.paid.toString(), 'Стоимость события должна соответствовать стоимости события в запросе');",
+									"    pm.expect(target.eventDate).equal(source.eventDate, 'Дата проведения события должна соответствовать дате проведения события в запросе');",
+									"    pm.expect(target.description).equal(source.description, 'Описание события должно соответствовать описание события в запросе');",
+									"    pm.expect(target.participantLimit.toString()).equal(source.participantLimit.toString(), 'Лимит участников события должно соответствовать лимиту участников события в запросе');",
+									"    pm.expect(target.location.lat.toString()).equal(source.location.lat.toString(), 'Широта локации проведения события должна соответствовать широте локации проведения события в запросе');",
+									"    pm.expect(target.location.lon.toString()).equal(source.location.lon.toString(), 'Долгота локации проведения события должна соответствовать долготе локации проведения события в запросе');",
+									"    pm.expect(target.requestModeration.toString()).equal(source.requestModeration.toString(), 'Необходимость модерации события должна соответствовать необходимости модерации события в запросе');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{request_body}}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/:userId/events",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								":userId",
+								"events"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{uid2}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Publish Event #3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+									"    pm.response.to.be.ok;    ",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const source = JSON.parse(pm.request.body.raw);",
+									"const target = pm.response.json();",
+									"const eventid = parseInt(pm.collectionVariables.get(\"eventid3\"));",
+									"",
+									"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
+									"    pm.expect(target.state.toString()).equal(\"PUBLISHED\");",
+									"    pm.expect(eventid).equal(target.id, 'Id события должен соответствовать искомому событию');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"stateAction\": \"PUBLISH_EVENT\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/events/:eventId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"events",
+								":eventId"
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "{{eventid3}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request from User #3 to Event #1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(201);   ",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const target = pm.response.json();",
+									"const eventId1 = parseInt(pm.collectionVariables.get(\"eventid1\"));",
+									"",
+									"pm.test(\"При создании у запроса на участие должен быть статус CONFIRMED\", function () {",
+									"    pm.expect(target.status).equal(\"CONFIRMED\");",
+									"});",
+									"",
+									"pm.test(\"Id события в запросе и в ответе должны совпадать\", function () {",
+									"    pm.expect(target.event).equal(eventId1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/:userId/requests?eventId={{eventid1}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								":userId",
+								"requests"
+							],
+							"query": [
+								{
+									"key": "eventId",
+									"value": "{{eventid1}}"
+								}
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{uid3}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request from User #2 to Event #1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(201);   ",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const target = pm.response.json();",
+									"const eventId1 = parseInt(pm.collectionVariables.get(\"eventid1\"));",
+									"",
+									"pm.test(\"При создании у запроса на участие должен быть статус CONFIRMED\", function () {",
+									"    pm.expect(target.status).equal(\"CONFIRMED\");",
+									"});",
+									"",
+									"pm.test(\"Id события в запросе и в ответе должны совпадать\", function () {",
+									"    pm.expect(target.event).equal(eventId1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/:userId/requests?eventId={{eventid1}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								":userId",
+								"requests"
+							],
+							"query": [
+								{
+									"key": "eventId",
+									"value": "{{eventid1}}"
+								}
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "{{uid2}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subscriptions",
+			"item": [
+				{
+					"name": "No subscriptions",
+					"item": [
+						{
+							"name": "User #1 has no subscriptions before creating",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+											"    pm.response.to.have.status(200);  ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const target = pm.response.json();",
+											"",
+											"pm.test(\"Размер полученного объекта должен быть равен нулю - еще не создано ни одной подписки.\", function () {",
+											"pm.expect(target.length).to.equal(0);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions?type=EVENTS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "EVENTS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User #2 has no subscriptions before creating",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+											"    pm.response.to.have.status(200);  ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const target = pm.response.json();",
+											"",
+											"pm.test(\"Размер полученного объекта должен быть равен нулю - еще не создано ни одной подписки.\", function () {",
+											"pm.expect(target.length).to.equal(0);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions?type=EVENTS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "EVENTS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid2}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "User #3 has no subscriptions before creating",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+											"    pm.response.to.have.status(200);  ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const target = pm.response.json();",
+											"",
+											"pm.test(\"Размер полученного объекта должен быть равен нулю - еще не создано ни одной подписки.\", function () {",
+											"pm.expect(target.length).to.equal(0);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions?type=EVENTS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "EVENTS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid3}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Add / delete subscriptions, get subscribed users",
+					"item": [
+						{
+							"name": "New Subscription from U3 to U1-events",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен иметь код статуса 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=EVENTS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions",
+										":ownerId"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "EVENTS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid3}}"
+										},
+										{
+											"key": "ownerId",
+											"value": "{{uid1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "New Subscription from U2 to U3-participations",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен иметь код статуса 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=PARTICIPATIONS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions",
+										":ownerId"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "PARTICIPATIONS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid2}}"
+										},
+										{
+											"key": "ownerId",
+											"value": "{{uid3}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "New Subscription from U2 to U3 participations - already exists",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 409 и данные в формате json\", function () {",
+											"    pm.response.to.have.status(409);",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=PARTICIPATIONS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions",
+										":ownerId"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "PARTICIPATIONS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid2}}"
+										},
+										{
+											"key": "ownerId",
+											"value": "{{uid3}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Subscriptions for Participations from U2 - get list of users subscribed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+											"    pm.response.to.be.ok;    ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const target = pm.response.json()[0];",
+											"const uid = parseInt(pm.collectionVariables.get(\"uid3\"));",
+											"",
+											"pm.test(\"Пользователи должны содержать поля: id, name\", function () {",
+											"    pm.expect(target).to.have.property('id');",
+											"    pm.expect(target).to.have.property('name');",
+											"});",
+											"",
+											"pm.test(\"Должен быть найден только один пользователь (подписка) по заданному запросу\", function () {",
+											"    pm.expect(pm.response.json().length).to.eql(1);",
+											"});",
+											"",
+											"pm.test(\"Должен быть найден пользователь с id = 3\", function () {",
+											"    pm.expect(target.id).equal(uid);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions?type=PARTICIPATIONS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "PARTICIPATIONS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid2}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Subscriptions for Events from U3 - get list of users subscribed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+											"    pm.response.to.be.ok;    ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const target = pm.response.json()[0];",
+											"const uid = pm.collectionVariables.get(\"uid1\");",
+											"",
+											"pm.test(\"Пользователи должны содержать поля: id, name\", function () {",
+											"    pm.expect(target).to.have.property('id');",
+											"    pm.expect(target).to.have.property('name');",
+											"});",
+											"",
+											"pm.test(\"Должен быть найден только один пользователь (подписка) по заданному запросу\", function () {",
+											"    pm.expect(pm.response.json().length).to.eql(1);",
+											"});",
+											"",
+											"pm.test(\"Должен быть найден пользователь с id = 1\", function () {",
+											"    pm.expect(target.id).equal(uid);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions?type=EVENTS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "EVENTS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid3}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete subscription from U3 to U1-events",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен иметь код статуса 204\", function () {",
+											"    pm.response.to.have.status(204);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=EVENTS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions",
+										":ownerId"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "EVENTS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid3}}"
+										},
+										{
+											"key": "ownerId",
+											"value": "{{uid1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Subscriptions for Events from U3 - list should be empty",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+											"    pm.response.to.be.ok;    ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"pm.test(\"Не должно быть найдено ни одного пользователь (подписки) по заданному запросу\", function () {",
+											"    pm.expect(pm.response.json().length).to.eql(0);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions?type=EVENTS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "EVENTS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid3}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Events from users sibscribed",
+					"item": [
+						{
+							"name": "Get Events for Participations of U3 (subscribed by U2)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+											"    pm.response.to.be.ok;    ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const target = pm.response.json()[0];",
+											"const eventid = parseInt(pm.collectionVariables.get(\"eventid1\"));",
+											"",
+											"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, views\", function () {",
+											"pm.expect(target).to.have.property('id');",
+											"pm.expect(target).to.have.property('title');",
+											"pm.expect(target).to.have.property('annotation');",
+											"pm.expect(target).to.have.property('category');",
+											"pm.expect(target).to.have.property('paid');",
+											"pm.expect(target).to.have.property('eventDate');",
+											"pm.expect(target).to.have.property('initiator');",
+											"pm.expect(target).to.have.property('views');",
+											"});",
+											"",
+											"pm.test(\"Должно быть найдено только одно событие по заданному запросу\", function () {",
+											"    pm.expect(pm.response.json().length).to.eql(1);",
+											"});",
+											"",
+											"pm.test(\"Должно быть найдено событие с id = 1\", function () {",
+											"    pm.expect(target.id).equal(eventid);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/participation/:ownerId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions",
+										"participation",
+										":ownerId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid2}}"
+										},
+										{
+											"key": "ownerId",
+											"value": "{{uid3}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "New Subscription from U3 to U1 events",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен иметь код статуса 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=EVENTS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions",
+										":ownerId"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "EVENTS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid3}}"
+										},
+										{
+											"key": "ownerId",
+											"value": "{{uid1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Events of U1 subscribed by U3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+											"    pm.response.to.be.ok;    ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const target = pm.response.json();",
+											"",
+											"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, views\", function () {",
+											"pm.expect(target[0]).to.have.property('id');",
+											"pm.expect(target[0]).to.have.property('title');",
+											"pm.expect(target[0]).to.have.property('annotation');",
+											"pm.expect(target[0]).to.have.property('category');",
+											"pm.expect(target[0]).to.have.property('paid');",
+											"pm.expect(target[0]).to.have.property('eventDate');",
+											"pm.expect(target[0]).to.have.property('initiator');",
+											"pm.expect(target[0]).to.have.property('views');",
+											"});",
+											"",
+											"pm.test(\"Должно быть найдено два события по заданному запросу\", function () {",
+											"    pm.expect(pm.response.json().length).to.eql(2);",
+											"});",
+											"",
+											"pm.test(\"Должнs быть найдены события с id = 1 и id = 2\", function () {",
+											"    pm.expect(target[0].id).equal(parseInt(pm.collectionVariables.get(\"eventid1\")));",
+											"    pm.expect(target[1].id).equal(parseInt(pm.collectionVariables.get(\"eventid2\")));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/events/:ownerId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions",
+										"events",
+										":ownerId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid3}}"
+										},
+										{
+											"key": "ownerId",
+											"value": "{{uid1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "New Subscription from U1 to U3-participations",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен иметь код статуса 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=PARTICIPATIONS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions",
+										":ownerId"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "PARTICIPATIONS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid1}}"
+										},
+										{
+											"key": "ownerId",
+											"value": "{{uid3}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "New Subscription from U1 to U2-participations",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен иметь код статуса 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=PARTICIPATIONS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions",
+										":ownerId"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "PARTICIPATIONS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid1}}"
+										},
+										{
+											"key": "ownerId",
+											"value": "{{uid2}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Participation-Events of All subscribed by U1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+											"    pm.response.to.be.ok;    ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const target = pm.response.json();",
+											"",
+											"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, views\", function () {",
+											"pm.expect(target[0]).to.have.property('id');",
+											"pm.expect(target[0]).to.have.property('title');",
+											"pm.expect(target[0]).to.have.property('annotation');",
+											"pm.expect(target[0]).to.have.property('category');",
+											"pm.expect(target[0]).to.have.property('paid');",
+											"pm.expect(target[0]).to.have.property('eventDate');",
+											"pm.expect(target[0]).to.have.property('initiator');",
+											"pm.expect(target[0]).to.have.property('views');",
+											"});",
+											"",
+											"pm.test(\"Должно быть найдено одно событие по заданному запросу\", function () {",
+											"    pm.expect(pm.response.json().length).to.eql(1);",
+											"});",
+											"",
+											"pm.test(\"Должно быть найдено событие с id = 1\", function () {",
+											"    pm.expect(target[0].id).equal(parseInt(pm.collectionVariables.get(\"eventid1\")));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/participation",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions",
+										"participation"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "New Subscription from U3 to U2-events",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен иметь код статуса 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/:ownerId?type=EVENTS",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions",
+										":ownerId"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "EVENTS"
+										}
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid3}}"
+										},
+										{
+											"key": "ownerId",
+											"value": "{{uid2}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Events of all subscribed by U3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+											"    pm.response.to.be.ok;    ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const target = pm.response.json();",
+											"",
+											"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, views\", function () {",
+											"pm.expect(target[0]).to.have.property('id');",
+											"pm.expect(target[0]).to.have.property('title');",
+											"pm.expect(target[0]).to.have.property('annotation');",
+											"pm.expect(target[0]).to.have.property('category');",
+											"pm.expect(target[0]).to.have.property('paid');",
+											"pm.expect(target[0]).to.have.property('eventDate');",
+											"pm.expect(target[0]).to.have.property('initiator');",
+											"pm.expect(target[0]).to.have.property('views');",
+											"});",
+											"",
+											"pm.test(\"Должно быть найдено 3 события по заданному запросу\", function () {",
+											"    pm.expect(parseInt(pm.response.json().length)).to.eql(3);",
+											"});",
+											"",
+											"pm.test(\"Должно быть найдено событие с корректыми id.\", function () {",
+											"    pm.expect(target[0].id).equal(parseInt(pm.collectionVariables.get(\"eventid1\")));",
+											"    pm.expect(target[1].id).equal(parseInt(pm.collectionVariables.get(\"eventid2\")));",
+											"    pm.expect(target[2].id).equal(parseInt(pm.collectionVariables.get(\"eventid3\")));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subscriptions/events",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subscriptions",
+										"events"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid3}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get User With Subscriptions",
+					"item": [
+						{
+							"name": "Get User info with Subscriptions U1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+											"    pm.response.to.be.ok;    ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const target = pm.response.json();",
+											"",
+											"pm.test(\"Пользователь должен содержать поля: id, name, subForEvents, subForParticipation, mySubForEvents, mySubForParticipation\", function () {",
+											"pm.expect(target).to.have.property('id');",
+											"pm.expect(target).to.have.property('name');",
+											"pm.expect(target).to.have.property('subForEvents');",
+											"pm.expect(target).to.have.property('subForParticipation');",
+											"pm.expect(target).to.have.property('mySubForEvents');",
+											"pm.expect(target).to.have.property('mySubForParticipation');",
+											"});",
+											"",
+											"pm.test(\"У пользователя U1 должна быть подписка на события от U3 и он должен быть подписан на события с участием U2 и U3.\", function () {",
+											"    pm.expect(target.subForEvents).contains(parseInt(pm.collectionVariables.get(\"uid3\")));",
+											"    pm.expect(target.mySubForParticipation).contains(parseInt(pm.collectionVariables.get(\"uid2\")));",
+											"    pm.expect(target.mySubForParticipation).contains(parseInt(pm.collectionVariables.get(\"uid3\")));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/vnd.api+json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User info with Subscriptions U2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+											"    pm.response.to.be.ok;    ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const target = pm.response.json();",
+											"",
+											"pm.test(\"Пользователь должен содержать поля: id, name, subForEvents, subForParticipation, mySubForEvents, mySubForParticipation\", function () {",
+											"pm.expect(target).to.have.property('id');",
+											"pm.expect(target).to.have.property('name');",
+											"pm.expect(target).to.have.property('subForEvents');",
+											"pm.expect(target).to.have.property('subForParticipation');",
+											"pm.expect(target).to.have.property('mySubForEvents');",
+											"pm.expect(target).to.have.property('mySubForParticipation');",
+											"});",
+											"",
+											"pm.test(\"У пользователя U2 должна быть подписка на события от U3, подписка на события с участием от U1 и он должен быть подписан на события с участием U3 и U3.\", function () {",
+											"    pm.expect(target.subForEvents[0]).equal(parseInt(pm.collectionVariables.get(\"uid3\")));",
+											"    pm.expect(target.subForParticipation).contains(parseInt(pm.collectionVariables.get(\"uid1\")));",
+											"    pm.expect(target.mySubForParticipation).contains(parseInt(pm.collectionVariables.get(\"uid3\")));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/vnd.api+json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid2}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User info with Subscriptions U3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+											"    pm.response.to.be.ok;    ",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const target = pm.response.json();",
+											"",
+											"pm.test(\"Пользователь должен содержать поля: id, name, subForEvents, subForParticipation, mySubForEvents, mySubForParticipation\", function () {",
+											"pm.expect(target).to.have.property('id');",
+											"pm.expect(target).to.have.property('name');",
+											"pm.expect(target).to.have.property('subForEvents');",
+											"pm.expect(target).to.have.property('subForParticipation');",
+											"pm.expect(target).to.have.property('mySubForEvents');",
+											"pm.expect(target).to.have.property('mySubForParticipation');",
+											"});",
+											"",
+											"pm.test(\"У пользователя U3 должна быть подписка на события с участием от U2 и U1, и он должен быть подписан на события U1 и U2.\", function () {",
+											"    pm.expect(target.subForParticipation).contains(parseInt(pm.collectionVariables.get(\"uid2\")));",
+											"    pm.expect(target.subForParticipation).contains(parseInt(pm.collectionVariables.get(\"uid1\")));",
+											"    pm.expect(target.mySubForEvents).contains(parseInt(pm.collectionVariables.get(\"uid2\")));",
+											"    pm.expect(target.mySubForEvents).contains(parseInt(pm.collectionVariables.get(\"uid1\")));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/vnd.api+json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid3}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"RandomUtils = class {",
+					"    constructor() {}",
+					"",
+					"    getUser() {",
+					"        return {",
+					"            name: pm.variables.replaceIn('{{$randomFullName}}'),",
+					"            email: pm.variables.replaceIn('{{$randomEmail}}')",
+					"        };",
+					"    }",
+					"",
+					"    getCategory() {",
+					"        return {",
+					"            name: pm.variables.replaceIn('{{$randomWord}}') + Math.floor(Math.random() * 100).toString()",
+					"        };",
+					"    }",
+					"",
+					"    getEvent(categoryId) {",
+					"        return {",
+					"            annotation: pm.variables.replaceIn('{{$randomLoremParagraph}}'),",
+					"            category: categoryId,",
+					"            description: pm.variables.replaceIn('{{$randomLoremParagraphs}}'),",
+					"            eventDate: this.getFutureDateTime(),",
+					"            location: {",
+					"                lat: parseFloat(pm.variables.replaceIn('{{$randomLatitude}}')),",
+					"                lon: parseFloat(pm.variables.replaceIn('{{$randomLongitude}}')),",
+					"            },",
+					"            paid: pm.variables.replaceIn('{{$randomBoolean}}'),",
+					"            participantLimit: 0,",
+					"            requestModeration: \"false\",",
+					"            title: pm.variables.replaceIn('{{$randomLoremSentence}}'),",
+					"        }",
+					"    }",
+					"",
+					"    getFutureDateTime(hourShift = 5, minuteShift=0, yearShift=0) {",
+					"        let moment = require('moment');",
+					"",
+					"        let m = moment();",
+					"        m.add(hourShift, 'hour');",
+					"        m.add(minuteShift, 'minute');",
+					"        m.add(yearShift, 'year');",
+					"",
+					"        return m.format('YYYY-MM-DD HH:mm:ss');",
+					"    }",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "uid1",
+			"value": ""
+		},
+		{
+			"key": "uid2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "uid3",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "catid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "request_body",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "eventid1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "eventid2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "eventid3",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

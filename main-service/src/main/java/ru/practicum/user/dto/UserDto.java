@@ -2,6 +2,7 @@ package ru.practicum.user.dto;
 
 import lombok.*;
 
+
 @Getter
 @Setter
 @AllArgsConstructor
