@@ -19,6 +19,9 @@ making it possible to join.
 
 **Specification** https://github.com/ebogacheva/java-explore-with-me/blob/main/ewm-stats-service-spec.json
 
+**DB diagram**
+![img.png](img.png)
+
 ## Technology stack
 
 - JAVA 11
